@@ -138,6 +138,16 @@ const createTestUsers = async () => {
 
         // Central Admin
         {
+            name: "Nikhil Sethi",
+            email: "nikhilsethin494@gmail.com",
+            password: "password123",
+            role: "central_admin",
+            city: "Delhi",
+            state: "Delhi",
+            phone: "+919876543299",
+            aadhar: "9999-8888-7777"
+        },
+        {
             name: 'Central Admin',
             email: 'centraladmin@test.com',
             password: 'admin123',
