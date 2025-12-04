@@ -35,8 +35,8 @@ const Navbar = () => {
                                 <Link to="/my-posts" className="hover:text-red-400 transition-colors">My Posts</Link>
                                 <div className="flex items-center space-x-3 ml-4 border-l pl-4 border-gray-700">
                                     <div className="text-right hidden lg:block">
-                                        <p className="text-sm font-semibold">{user.name}</p>
-                                        <p className="text-xs text-gray-400 uppercase">{user.role.replace('_', ' ')}</p>
+                                        <p className="text-sm font-semibold">{user?.name || 'User'}</p>
+                                        <p className="text-xs text-gray-400 uppercase">{user?.role?.replace('_', ' ') || 'USER'}</p>
                                     </div>
                                     <button
                                         onClick={handleLogout}

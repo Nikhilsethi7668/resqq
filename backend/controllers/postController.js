@@ -70,7 +70,7 @@ const createPost = async (req, res) => {
                 const alertPayload = {
                     alertId: alert._id,
                     postId: post._id,
-                    dangerLevel,
+                    dangerLevel: dangerScore,
                     city,
                     state,
                     message: "High Danger SOS Reported!"

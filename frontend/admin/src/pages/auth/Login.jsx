@@ -14,11 +14,13 @@ const Login = () => {
         e.preventDefault();
         try {
             const res = await api.post('/auth/login', { email, password });
-            if (res.data.user.role === 'user') {
+            const userData = res.data;
+
+            if (userData.role === 'user') {
                 setError('You are not authorized to access the admin panel.');
                 return;
             }
-            login(res.data.user, res.data.token);
+            login(userData, userData.token);
             navigate('/admin/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');

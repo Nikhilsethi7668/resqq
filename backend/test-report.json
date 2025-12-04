@@ -1,0 +1,122 @@
+{
+  "passed": 21,
+  "failed": 2,
+  "skipped": 0,
+  "tests": [
+    {
+      "name": "Login as user1",
+      "status": "PASS",
+      "message": "Token received"
+    },
+    {
+      "name": "Login as user2",
+      "status": "PASS",
+      "message": "Token received"
+    },
+    {
+      "name": "Login as cityAdmin",
+      "status": "PASS",
+      "message": "Token received"
+    },
+    {
+      "name": "Login as stateAdmin",
+      "status": "PASS",
+      "message": "Token received"
+    },
+    {
+      "name": "Login as centralAdmin",
+      "status": "PASS",
+      "message": "Token received"
+    },
+    {
+      "name": "Login with invalid credentials",
+      "status": "PASS",
+      "message": "Correctly rejected"
+    },
+    {
+      "name": "Token verification",
+      "status": "PASS",
+      "message": "User data retrieved"
+    },
+    {
+      "name": "Role-based access control",
+      "status": "PASS",
+      "message": "User blocked from admin route"
+    },
+    {
+      "name": "Create text-only SOS",
+      "status": "PASS",
+      "message": "Post ID: 693198be62cdb964f52afbb2"
+    },
+    {
+      "name": "Manual location selection",
+      "status": "PASS",
+      "message": "City and state saved"
+    },
+    {
+      "name": "ML Scoring: High-risk text",
+      "status": "PASS",
+      "message": "Score: 93"
+    },
+    {
+      "name": "ML Scoring: Low-risk text",
+      "status": "PASS",
+      "message": "Score: 22"
+    },
+    {
+      "name": "ML Scoring: Ambiguous text",
+      "status": "FAIL",
+      "message": "Score 15 not in expected range [30-60]"
+    },
+    {
+      "name": "City admin sees only assigned city posts",
+      "status": "PASS",
+      "message": "18 Mumbai alerts"
+    },
+    {
+      "name": "Central admin sees all posts",
+      "status": "PASS",
+      "message": "22 total alerts visible"
+    },
+    {
+      "name": "View admin alerts list",
+      "status": "PASS",
+      "message": "18 alerts found"
+    },
+    {
+      "name": "Mark post as investigating",
+      "status": "PASS",
+      "message": "Status updated"
+    },
+    {
+      "name": "Mark post as help_sent",
+      "status": "PASS",
+      "message": "Help details saved"
+    },
+    {
+      "name": "Mark post as completed",
+      "status": "PASS",
+      "message": "Post resolved"
+    },
+    {
+      "name": "SQL Injection protection (login)",
+      "status": "PASS",
+      "message": "Attack blocked"
+    },
+    {
+      "name": "XSS protection",
+      "status": "FAIL",
+      "message": "Script tags not escaped"
+    },
+    {
+      "name": "Unauthorized route access protection",
+      "status": "PASS",
+      "message": "Access denied without token"
+    },
+    {
+      "name": "20 concurrent SOS posts",
+      "status": "PASS",
+      "message": "All posts created in 0.86s (avg 0.04s per post)"
+    }
+  ]
+}

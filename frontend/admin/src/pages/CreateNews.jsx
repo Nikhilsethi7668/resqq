@@ -31,7 +31,7 @@ const CreateNews = () => {
                     }
                 }
             );
-            navigate('/news');
+            navigate('/admin/dashboard');
         } catch (err) {
             alert('Failed to create news');
         }
