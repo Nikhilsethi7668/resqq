@@ -12,12 +12,18 @@ const createPost = async (req, res) => {
         let content = textContent;
 
         if (req.file) {
-            content = req.file.location; // S3 URL
+            // Check if S3 (location) or Local (filename)
+            if (req.file.location) {
+                content = req.file.location;
+            } else {
+                // Construct local URL
+                content = `${process.env.BACKEND_URL || 'http://localhost:5001'}/uploads/${req.file.filename}`;
+            }
         }
 
         // 1. Create Post
         const post = await Post.create({
-            userId: req.user._id,
+            userId: req.user ? req.user._id : null,
             type,
             content,
             city,
@@ -30,7 +36,7 @@ const createPost = async (req, res) => {
         // const dangerScore = mlResponse.data.danger_score;
 
         // Mocking ML response
-        const dangerScore = Math.floor(Math.random() * 100); // Random 0-100
+        const dangerScore = Math.floor(Math.random() * 40) + 60; // Random 60-100 (Always Alert)
         const mlResponse = { danger_score: dangerScore, tags: ['simulated'] };
 
         // 3. Update Post

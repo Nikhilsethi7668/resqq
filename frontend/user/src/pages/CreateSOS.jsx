@@ -5,16 +5,18 @@ import useAuthStore from '../stores/useAuthStore';
 import { Camera, Mic, Type, Upload } from 'lucide-react';
 
 const CreateSOS = () => {
-    const [mode, setMode] = useState('text'); // text, photo, audio
+    const { user, token } = useAuthStore();
     const [text, setText] = useState('');
     const [file, setFile] = useState(null);
+    const [mediaType, setMediaType] = useState(null); // 'image' or 'audio'
+    const [city, setCity] = useState(user?.city || '');
+    const [state, setState] = useState(user?.state || '');
     const [isRecording, setIsRecording] = useState(false);
     const [audioBlob, setAudioBlob] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const mediaRecorderRef = useRef(null);
     const navigate = useNavigate();
-    const { user, token } = useAuthStore();
 
     const startRecording = async () => {
         try {
@@ -28,10 +30,12 @@ const CreateSOS = () => {
                 const blob = new Blob(chunks, { type: 'audio/webm' });
                 setAudioBlob(blob);
                 setFile(new File([blob], "sos_audio.webm", { type: 'audio/webm' }));
+                setMediaType('audio');
             };
 
             mediaRecorder.start();
             setIsRecording(true);
+            setFile(null); // Clear any existing photo
         } catch (err) {
             console.error("Error accessing microphone:", err);
             alert("Could not access microphone");
@@ -45,18 +49,34 @@ const CreateSOS = () => {
         }
     };
 
+    const handlePhotoSelect = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setMediaType('image');
+            setAudioBlob(null); // Clear any existing audio
+        }
+    };
+
+    const clearMedia = () => {
+        setFile(null);
+        setMediaType(null);
+        setAudioBlob(null);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         const formData = new FormData();
-        formData.append('type', mode === 'photo' ? 'image' : mode);
-        formData.append('city', user.city);
-        formData.append('state', user.state);
+        // Determine type: default 'text', but if media exists, use that type
+        const type = mediaType || 'text';
+        formData.append('type', type);
+        formData.append('city', city);
+        formData.append('state', state);
+        formData.append('textContent', text);
 
-        if (mode === 'text') {
-            formData.append('textContent', text);
-        } else if (file) {
+        if (file) {
             formData.append('media', file);
         }
 
@@ -71,7 +91,8 @@ const CreateSOS = () => {
             navigate('/my-posts');
         } catch (err) {
             console.error(err);
-            alert('Failed to send SOS');
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to send SOS';
+            alert(`Error: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -81,88 +102,117 @@ const CreateSOS = () => {
         <div className="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
             <h1 className="text-3xl font-bold text-red-600 mb-6 text-center">EMERGENCY SOS</h1>
 
-            <div className="flex justify-center space-x-4 mb-8">
-                <button
-                    onClick={() => setMode('text')}
-                    className={`p-4 rounded-full ${mode === 'text' ? 'bg-red-600 text-white' : 'bg-gray-200'}`}
-                >
-                    <Type size={24} />
-                </button>
-                <button
-                    onClick={() => setMode('photo')}
-                    className={`p-4 rounded-full ${mode === 'photo' ? 'bg-red-600 text-white' : 'bg-gray-200'}`}
-                >
-                    <Camera size={24} />
-                </button>
-                <button
-                    onClick={() => setMode('audio')}
-                    className={`p-4 rounded-full ${mode === 'audio' ? 'bg-red-600 text-white' : 'bg-gray-200'}`}
-                >
-                    <Mic size={24} />
-                </button>
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-6">
-                {mode === 'text' && (
+                {/* 1. Mandatory Text Input */}
+                <div>
+                    <label className="block text-gray-700 font-bold mb-2">Describe Emergency (Required)</label>
                     <textarea
                         value={text}
                         onChange={(e) => setText(e.target.value)}
-                        placeholder="Describe the emergency..."
-                        className="w-full h-40 p-4 border rounded-lg text-lg"
+                        placeholder="Please describe the situation..."
+                        className="w-full h-32 p-4 border rounded-lg text-lg focus:ring-2 focus:ring-red-500"
                         required
                     />
-                )}
+                </div>
 
-                {mode === 'photo' && (
-                    <div className="text-center">
-                        <label className="block w-full p-10 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                capture="environment"
-                                onChange={(e) => setFile(e.target.files[0])}
-                                className="hidden"
-                            />
-                            <div className="flex flex-col items-center">
-                                <Upload size={48} className="text-gray-400 mb-2" />
-                                <span className="text-gray-600">
-                                    {file ? file.name : "Tap to Capture or Upload Photo"}
-                                </span>
-                            </div>
-                        </label>
-                    </div>
-                )}
+                {/* 2. Optional Media Attachment */}
+                <div className="border-t pt-4">
+                    <label className="block text-gray-700 font-bold mb-4">Attach Media (Optional)</label>
 
-                {mode === 'audio' && (
-                    <div className="text-center py-10">
-                        {!isRecording ? (
+                    {!file && !isRecording && (
+                        <div className="flex space-x-4">
+                            {/* Photo Button */}
+                            <label className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    capture="environment"
+                                    onChange={handlePhotoSelect}
+                                    className="hidden"
+                                />
+                                <Camera size={32} className="text-gray-500 mb-2" />
+                                <span className="text-sm text-gray-600">Add Photo</span>
+                            </label>
+
+                            {/* Audio Button */}
                             <button
                                 type="button"
                                 onClick={startRecording}
-                                className="bg-red-600 text-white p-8 rounded-full animate-pulse hover:bg-red-700"
+                                className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg hover:bg-gray-50"
                             >
-                                <Mic size={48} />
+                                <Mic size={32} className="text-gray-500 mb-2" />
+                                <span className="text-sm text-gray-600">Record Audio</span>
                             </button>
-                        ) : (
+                        </div>
+                    )}
+
+                    {/* Recording State */}
+                    {isRecording && (
+                        <div className="text-center py-6 bg-red-50 rounded-lg animate-pulse">
+                            <p className="text-red-600 font-bold mb-2">Recording Audio...</p>
                             <button
                                 type="button"
                                 onClick={stopRecording}
-                                className="bg-gray-800 text-white p-8 rounded-full hover:bg-gray-900"
+                                className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700"
                             >
-                                <div className="w-12 h-12 bg-red-500 rounded-sm" />
+                                Stop Recording
                             </button>
-                        )}
-                        <p className="mt-4 text-lg font-semibold">
-                            {isRecording ? "Recording... Tap to Stop" : "Tap to Record Audio"}
-                        </p>
-                        {audioBlob && <p className="text-green-600 mt-2">Audio Recorded!</p>}
-                    </div>
-                )}
+                        </div>
+                    )}
 
-                <div className="bg-yellow-50 p-4 rounded border border-yellow-200">
-                    <p className="text-sm text-yellow-800">
-                        <strong>Location:</strong> {user?.city || "Faketown"}, {user?.state || "Fakestate"} (Auto-detected from profile)
+                    {/* Selected Media Preview */}
+                    {file && !isRecording && (
+                        <div className="flex items-center justify-between p-4 bg-gray-100 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                                {mediaType === 'image' ? (
+                                    <Camera className="text-blue-600" />
+                                ) : (
+                                    <Mic className="text-blue-600" />
+                                )}
+                                <span className="font-medium text-gray-700">
+                                    {mediaType === 'image' ? file.name : 'Voice Message Recorded'}
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={clearMedia}
+                                className="text-red-500 hover:text-red-700 font-bold"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* 3. Location Confirmation */}
+                <div className="bg-yellow-50 p-4 rounded border border-yellow-200 space-y-3">
+                    <p className="text-sm text-yellow-800 font-semibold">
+                        📍 Confirm Location:
                     </p>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">City</label>
+                            <input
+                                type="text"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                className="w-full p-2 border rounded text-sm"
+                                placeholder="Enter City"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">State</label>
+                            <input
+                                type="text"
+                                value={state}
+                                onChange={(e) => setState(e.target.value)}
+                                className="w-full p-2 border rounded text-sm"
+                                placeholder="Enter State"
+                                required
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <button

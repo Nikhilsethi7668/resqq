@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const PostSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
     type: { type: String, enum: ['text', 'image', 'audio'], required: true },
     content: { type: String, required: true }, // Text content or S3 URL
     city: { type: String, required: true },

@@ -154,9 +154,9 @@ const AdminDashboard = () => {
                                         Danger Level: {alert.postId?.dangerLevel || 'N/A'}
                                     </h3>
                                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${alert.postId?.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                            alert.postId?.status === 'help_sent' ? 'bg-blue-100 text-blue-800' :
-                                                alert.postId?.status === 'investigating' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-red-100 text-red-800'
+                                        alert.postId?.status === 'help_sent' ? 'bg-blue-100 text-blue-800' :
+                                            alert.postId?.status === 'investigating' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-red-100 text-red-800'
                                         }`}>
                                         {alert.postId?.status?.toUpperCase()}
                                     </span>
@@ -170,9 +170,9 @@ const AdminDashboard = () => {
                                 <div className="mt-3 p-3 bg-gray-50 rounded border">
                                     <p className="font-semibold text-sm text-gray-700 mb-1">Content:</p>
                                     {alert.postId?.type === 'image' ? (
-                                        <img src={alert.postId.contentUrl} alt="Evidence" className="max-w-xs rounded mt-2" />
+                                        <img src={alert.postId.content} alt="Evidence" className="max-w-xs rounded mt-2" />
                                     ) : alert.postId?.type === 'audio' ? (
-                                        <audio controls src={alert.postId.contentUrl} className="mt-2" />
+                                        <audio controls src={alert.postId.content} className="mt-2" />
                                     ) : (
                                         <p className="text-gray-800">{alert.postId?.textContent}</p>
                                     )}
@@ -217,7 +217,7 @@ const AdminDashboard = () => {
                                         >
                                             ✅ Send Help
                                         </button>
-.                                    </div>
+                                        .                                    </div>
                                 )}
 
                                 {alert.postId?.status === 'help_sent' && user && user.role === 'central_admin' && (
