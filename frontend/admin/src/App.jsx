@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/auth/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import CreateNews from './pages/CreateNews';
+import ManageAdmins from './pages/ManageAdmins';
 import useAuthStore from './stores/useAuthStore';
 import Layout from './components/layout/Layout';
 
@@ -34,6 +35,11 @@ function App() {
           <Route path="admin/news/create" element={
             <ProtectedRoute roles={['news_admin', 'central_admin']}>
               <CreateNews />
+            </ProtectedRoute>
+          } />
+          <Route path="admin/manage-admins" element={
+            <ProtectedRoute roles={['central_admin', 'state_admin']}>
+              <ManageAdmins />
             </ProtectedRoute>
           } />
         </Route>

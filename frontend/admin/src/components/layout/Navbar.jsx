@@ -23,6 +23,9 @@ const Navbar = () => {
 
                     <div className="hidden md:flex items-center space-x-6">
                         <Link to="/admin/dashboard" className="hover:text-red-400 transition-colors">Dashboard</Link>
+                        {user && (['central_admin', 'state_admin'].includes(user.role)) && (
+                            <Link to="/admin/manage-admins" className="hover:text-red-400 transition-colors">Manage Admins</Link>
+                        )}
                         {user && (['news_admin', 'central_admin'].includes(user.role)) && (
                             <Link to="/admin/news/create" className="hover:text-red-400 transition-colors">Create News</Link>
                         )}

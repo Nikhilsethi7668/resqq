@@ -1,7 +1,7 @@
 const Post = require('../models/Post');
 const Alert = require('../models/Alert');
 const User = require('../models/User');
-const { sendAlertEmail } = require('../services/emailService');
+const { sendAlertEmail, createAlertEmailHTML } = require('../services/emailService');
 const axios = require('axios');
 const FormData = require('form-data');
 
@@ -133,10 +133,29 @@ const createPost = async (req, res) => {
 
             const adminEmails = admins.map(a => a.email);
 
-            // Send Email
-            if (adminEmails.length > 0) {
-                sendAlertEmail(adminEmails, `URGENT: High Danger SOS in ${city}`, `Danger Level: ${dangerScore}. Post ID: ${post._id}`);
-            }
+            // TESTING MODE: Send all emails only to nikhilsethin494@gmail.com
+            // This prevents errors from non-existent admin emails
+            const testEmail = 'nikhilsethin494@gmail.com';
+            console.log(`📧 Alert triggered! Sending email to: ${testEmail}`);
+            console.log(`   (Would have sent to ${adminEmails.length} admins: ${adminEmails.join(', ')})`);
+
+            // Send Email with detailed alert information
+            const emailHTML = createAlertEmailHTML({
+                city: city,
+                state: state,
+                dangerLevel: dangerScore,
+                postId: post._id,
+                content: textContent || content,
+                type: type,
+                timestamp: new Date().toLocaleString()
+            });
+
+            await sendAlertEmail(
+                [testEmail],  // Only send to this email for testing
+                `🚨 URGENT: High Danger SOS in ${city}, ${state}`,
+                emailHTML
+            );
+
 
             // Socket Emit
             const io = req.app.get('io');
@@ -150,9 +169,21 @@ const createPost = async (req, res) => {
                     message: "High Danger SOS Reported!"
                 };
 
+                console.log('🔔 Emitting socket alerts...');
+                console.log(`   Alert Payload:`, JSON.stringify(alertPayload, null, 2));
+
                 io.to('central_admin').emit('new_alert', alertPayload);
+                console.log(`   ✅ Emitted to: central_admin`);
+
                 io.to(`state_${state}`).emit('new_alert', alertPayload);
+                console.log(`   ✅ Emitted to: state_${state}`);
+
                 io.to(`city_${city}`).emit('new_alert', alertPayload);
+                console.log(`   ✅ Emitted to: city_${city}`);
+
+                console.log(`   📊 Total connected sockets: ${io.sockets.sockets.size}`);
+            } else {
+                console.log('   ❌ Socket.io not available!');
             }
         }
 
@@ -244,10 +275,27 @@ const handleMLCallback = async (req, res) => {
 
             const adminEmails = admins.map(a => a.email);
 
-            // Send Email
-            if (adminEmails.length > 0) {
-                sendAlertEmail(adminEmails, `URGENT: High Danger SOS in ${post.city}`, `Danger Level: ${danger_score}. Post ID: ${post._id}`);
-            }
+            // TESTING MODE: Send all emails only to nikhilsethin494@gmail.com
+            const testEmail = 'nikhilsethin494@gmail.com';
+            console.log(`📧 Alert triggered! Sending email to: ${testEmail}`);
+            console.log(`   (Would have sent to ${adminEmails.length} admins: ${adminEmails.join(', ')})`);
+
+            // Send Email with detailed alert information
+            const emailHTML = createAlertEmailHTML({
+                city: post.city,
+                state: post.state,
+                dangerLevel: danger_score,
+                postId: post._id,
+                content: post.content,
+                type: post.type,
+                timestamp: new Date().toLocaleString()
+            });
+
+            await sendAlertEmail(
+                [testEmail],  // Only send to this email for testing
+                `🚨 URGENT: High Danger SOS in ${post.city}, ${post.state}`,
+                emailHTML
+            );
 
             // Socket Emit
             const io = req.app.get('io');

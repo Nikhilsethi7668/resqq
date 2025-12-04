@@ -9,7 +9,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
-    const { name, email, password, phone, city, state, aadhar, role } = req.body;
+    const { name, email, password, phone, city, state, aadhar } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -17,6 +17,8 @@ const registerUser = async (req, res) => {
         return res.status(400).json({ message: 'User already exists' });
     }
 
+    // SECURITY: Public registration only creates 'user' accounts
+    // Admins must be created by authorized admins via /api/admin/users/create
     const user = await User.create({
         name,
         email,
@@ -25,7 +27,7 @@ const registerUser = async (req, res) => {
         city,
         state,
         aadhar,
-        role: role || 'user'
+        role: 'user' // Force user role for public registration
     });
 
     if (user) {
@@ -52,6 +54,11 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(403).json({ message: 'Account has been deactivated. Please contact administrator.' });
+        }
+
         res.json({
             _id: user._id,
             name: user.name,

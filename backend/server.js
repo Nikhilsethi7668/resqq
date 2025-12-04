@@ -59,17 +59,23 @@ io.on("connection", (socket) => {
       console.log(`Socket ${socket.id} joined central_admin`);
     } else if (role === "state_admin") {
       socket.join(`state_${state}`);
-      console.log(`Socket ${socket.id} joined state_${state}`);
+      console.log(`✅ Socket ${socket.id} joined state_${state} (State Admin)`);
     } else if (role === "city_admin") {
       socket.join(`city_${city}`);
-      console.log(`Socket ${socket.id} joined city_${city}`);
+      console.log(`✅ Socket ${socket.id} joined city_${city} (City Admin)`);
     } else if (role === "user") {
       socket.join(`user_${socket.id}`); // Or user ID if available
+      console.log(`✅ Socket ${socket.id} joined user room`);
+    } else {
+      console.log(`⚠️  Socket ${socket.id} has unknown role: ${role}`);
     }
+
+    // Log all rooms this socket is in
+    console.log(`   📋 Socket ${socket.id} is now in rooms:`, Array.from(socket.rooms));
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
+    console.log("❌ Client disconnected:", socket.id);
   });
 });
 

@@ -14,6 +14,11 @@ const UserSchema = new mongoose.Schema({
     city: { type: String },
     state: { type: String },
     aadhar: { type: String },
+    // Admin Hierarchy Fields
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Who created this admin
+    isActive: { type: Boolean, default: true }, // Soft deletion flag
+    deactivatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Who deactivated this admin
+    deactivatedAt: { type: Date } // When was this admin deactivated
 }, { timestamps: true });
 
 UserSchema.pre('save', async function () {
