@@ -54,7 +54,7 @@ const CreateSOS = () => {
         formData.append('city', user.city);
         formData.append('state', user.state);
 
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.MODE === 'development') {
             formData.append('city', "Faketown");
             formData.append('state', "Fakestate");
         }

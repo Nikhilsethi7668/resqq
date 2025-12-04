@@ -1,15 +1,6 @@
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const { S3Client } = require('@aws-sdk/client-s3');
-const path = require('path');
-
-const s3 = new S3Client({
-    region: process.env.AWS_REGION,
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-    }
-});
+const s3 = require('../config/s3');
 
 // Check if credentials are valid/present, otherwise fallback to local (optional, but good for dev)
 // For this strict requirement, we assume S3.
