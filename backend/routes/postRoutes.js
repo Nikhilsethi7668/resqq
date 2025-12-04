@@ -1,0 +1,12 @@
+const express = require('express');
+const router = express.Router();
+const { createPost, getMyPosts, getPostById, addReview } = require('../controllers/postController');
+const { protect } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
+
+router.post('/', protect, upload.single('media'), createPost);
+router.get('/my', protect, getMyPosts);
+router.get('/:id', protect, getPostById);
+router.put('/:id/review', protect, addReview);
+
+module.exports = router;

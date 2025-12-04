@@ -1,0 +1,135 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    padding: var(--spacing-4);
+    animation: fadeIn var(--transition-base);
+}
+
+.modal-content {
+    background: var(--color-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2xl);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+}
+
+/* Sizes */
+.modal-content-sm {
+    max-width: 400px;
+}
+
+.modal-content-md {
+    max-width: 600px;
+}
+
+.modal-content-lg {
+    max-width: 800px;
+}
+
+.modal-content-xl {
+    max-width: 1000px;
+}
+
+.modal-content-full {
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+/* Header */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    padding: var(--spacing-2);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: var(--color-gray-100);
+    color: var(--color-gray-900);
+}
+
+/* Body */
+.modal-body {
+    padding: var(--spacing-6);
+}
+
+/* Footer */
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-3);
+    padding: var(--spacing-6);
+    border-top: 1px solid var(--color-gray-200);
+    background: var(--color-gray-50);
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+    body.dark-mode .modal-content {
+        background: var(--color-dark-card);
+    }
+
+    body.dark-mode .modal-header,
+    body.dark-mode .modal-footer {
+        border-color: var(--color-dark-border);
+    }
+
+    body.dark-mode .modal-footer {
+        background: var(--color-dark-bg);
+    }
+
+    body.dark-mode .modal-title {
+        color: var(--color-dark-text);
+    }
+}
+
+/* Scrollbar Styling */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+    border-radius: var(--radius-full);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
+}

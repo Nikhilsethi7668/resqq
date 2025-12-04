@@ -1,0 +1,17 @@
+{
+  "name": "resqq-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend/shared",
+    "frontend/user",
+    "frontend/admin"
+  ],
+  "scripts": {
+    "dev:user": "npm run dev --workspace=frontend/user",
+    "dev:admin": "npm run dev --workspace=frontend/admin",
+    "build:user": "npm run build --workspace=frontend/user",
+    "build:admin": "npm run build --workspace=frontend/admin",
+    "dev:all": "concurrently \"npm run dev:user\" \"npm run dev:admin\""
+  }
+}
