@@ -1,34 +1,211 @@
 const News = require('../models/News');
+const Post = require('../models/Post');
 
-// @desc    Get News
+// @desc    Get News with pagination
 // @route   GET /api/news
 // @access  Public
 const getNews = async (req, res) => {
-    const news = await News.find().sort({ createdAt: -1 });
-    res.json(news);
+    try {
+        const { page = 1, limit = 10, category } = req.query;
+
+        let filter = {};
+        if (category) {
+            filter.category = category;
+        }
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const total = await News.countDocuments(filter);
+
+        const news = await News.find(filter)
+            .populate('authorId', 'name role')
+            .populate('relatedPostId', 'city state dangerLevel')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        res.json({
+            news,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages: Math.ceil(total / parseInt(limit)),
+                totalNews: total,
+                newsPerPage: parseInt(limit),
+                hasNextPage: skip + news.length < total,
+                hasPrevPage: parseInt(page) > 1
+            }
+        });
+    } catch (err) {
+        console.error('Error fetching news:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
 // @desc    Create News
 // @route   POST /api/news
 // @access  Private (News Admin)
 const createNews = async (req, res) => {
-    const { title, content, category, relatedPostId } = req.body;
+    try {
+        const { title, content, category, relatedPostId } = req.body;
 
-    let image = null;
-    if (req.file) {
-        image = req.file.location;
+        let image = null;
+        if (req.file) {
+            image = req.file.location || `${process.env.BACKEND_URL}/uploads/${req.file.filename}`;
+        }
+
+        const news = await News.create({
+            title,
+            content,
+            category,
+            image,
+            relatedPostId,
+            authorId: req.user._id
+        });
+
+        res.status(201).json(news);
+    } catch (err) {
+        console.error('Error creating news:', err);
+        res.status(500).json({ message: 'Server error' });
     }
-
-    const news = await News.create({
-        title,
-        content,
-        category,
-        image,
-        relatedPostId,
-        authorId: req.user._id
-    });
-
-    res.status(201).json(news);
 };
 
-module.exports = { getNews, createNews };
+// @desc    Convert Post to News (auto-fill)
+// @route   POST /api/news/from-post/:postId
+// @access  Private (News Admin, Central Admin)
+const convertPostToNews = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId)
+            .populate('userId', 'name city state');
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        if (post.status !== 'completed') {
+            return res.status(400).json({ message: 'Only completed posts can be converted to news' });
+        }
+
+        // Check if already converted
+        const existingNews = await News.findOne({ relatedPostId: post._id });
+        if (existingNews) {
+            return res.status(400).json({
+                message: 'This post has already been converted to news',
+                newsId: existingNews._id
+            });
+        }
+
+        // Auto-generate title and content
+        const disasterType = post.mlResponse?.disaster_type || 'Emergency';
+        const location = `${post.city}, ${post.state}`;
+
+        const autoTitle = `${disasterType} Successfully Resolved in ${location}`;
+
+        let autoContent = `A ${disasterType.toLowerCase()} emergency in ${location} has been successfully resolved by our emergency response team.\n\n`;
+
+        if (post.type === 'text' && post.content) {
+            autoContent += `Initial Report: "${post.content.substring(0, 200)}${post.content.length > 200 ? '...' : ''}"\n\n`;
+        }
+
+        autoContent += `The incident was reported with a danger level of ${post.dangerLevel}/100 and was promptly addressed by local authorities. `;
+
+        if (post.helpDetails?.situation) {
+            autoContent += `Response Details: ${post.helpDetails.situation}\n\n`;
+        }
+
+        autoContent += `This incident demonstrates the effectiveness of our emergency response system in protecting citizens and managing crisis situations.`;
+
+        // Get the additional data from request body (if provided)
+        const { title, content, category, image } = req.body;
+
+        const news = await News.create({
+            title: title || autoTitle,
+            content: content || autoContent,
+            category: category || 'success_story',
+            image: image || post.content, // Use post content as image if it's an image type
+            relatedPostId: post._id,
+            authorId: req.user._id
+        });
+
+        res.status(201).json({
+            message: 'Post converted to news successfully',
+            news,
+            autoGenerated: {
+                title: autoTitle,
+                content: autoContent
+            }
+        });
+    } catch (err) {
+        console.error('Error converting post to news:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Update News
+// @route   PUT /api/news/:id
+// @access  Private (News Admin, Central Admin)
+const updateNews = async (req, res) => {
+    try {
+        const { title, content, category } = req.body;
+
+        const news = await News.findById(req.params.id);
+
+        if (!news) {
+            return res.status(404).json({ message: 'News not found' });
+        }
+
+        // Check if user is author or central admin
+        if (news.authorId.toString() !== req.user._id.toString() && req.user.role !== 'central_admin') {
+            return res.status(403).json({ message: 'Not authorized to update this news' });
+        }
+
+        if (title) news.title = title;
+        if (content) news.content = content;
+        if (category) news.category = category;
+
+        if (req.file) {
+            news.image = req.file.location || `${process.env.BACKEND_URL}/uploads/${req.file.filename}`;
+        }
+
+        await news.save();
+
+        res.json({
+            message: 'News updated successfully',
+            news
+        });
+    } catch (err) {
+        console.error('Error updating news:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Delete News
+// @route   DELETE /api/news/:id
+// @access  Private (News Admin, Central Admin)
+const deleteNews = async (req, res) => {
+    try {
+        const news = await News.findById(req.params.id);
+
+        if (!news) {
+            return res.status(404).json({ message: 'News not found' });
+        }
+
+        // Check if user is author or central admin
+        if (news.authorId.toString() !== req.user._id.toString() && req.user.role !== 'central_admin') {
+            return res.status(403).json({ message: 'Not authorized to delete this news' });
+        }
+
+        await news.deleteOne();
+
+        res.json({ message: 'News deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting news:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = {
+    getNews,
+    createNews,
+    convertPostToNews,
+    updateNews,
+    deleteNews
+};

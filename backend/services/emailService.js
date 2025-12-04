@@ -69,7 +69,7 @@ module.exports = { sendAlertEmail };
 
 // Helper function to create detailed alert email HTML
 const createAlertEmailHTML = (alertData) => {
-    const { city, state, dangerLevel, postId, content, type, timestamp } = alertData;
+    const { city, state, dangerLevel, postId, content, type, timestamp, escalationInfo } = alertData;
 
     // Determine danger level color and label
     let dangerColor = '#dc2626'; // red
@@ -83,6 +83,23 @@ const createAlertEmailHTML = (alertData) => {
     } else {
         dangerColor = '#ea580c'; // orange
         dangerLabel = 'MODERATE DANGER';
+    }
+
+    // Escalation banner if present
+    let escalationBanner = '';
+    if (escalationInfo) {
+        escalationBanner = `
+            <tr>
+                <td style="background: linear-gradient(135deg, #7c2d12 0%, #991b1b 100%); padding: 20px; text-align: center; border-bottom: 3px solid #dc2626;">
+                    <h2 style="margin: 0; color: #ffffff; font-size: 20px; font-weight: bold; text-transform: uppercase;">
+                        🆘 HELP REQUEST ${escalationInfo.level ? `- ${escalationInfo.level}` : ''}
+                    </h2>
+                    <p style="margin: 10px 0 0 0; color: #fecaca; font-size: 14px;">
+                        Requested by: ${escalationInfo.from}
+                    </p>
+                </td>
+            </tr>
+        `;
     }
 
     return `
@@ -116,6 +133,8 @@ const createAlertEmailHTML = (alertData) => {
                                     <div style="width: ${dangerLevel}%; height: 8px; background-color: ${dangerColor};"></div>
                                 </td>
                             </tr>
+                            
+                            ${escalationBanner}
                             
                             <!-- Main Content -->
                             <tr>

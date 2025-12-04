@@ -3,24 +3,74 @@ const Alert = require('../models/Alert');
 const User = require('../models/User');
 const { sendAlertEmail } = require('../services/emailService');
 
-// @desc    Get Alerts
+// @desc    Get Alerts with pagination and filtering
 // @route   GET /api/admin/alerts
 // @access  Private (Admin)
 const getAlerts = async (req, res) => {
-    // Filter based on role
-    let filter = {};
-    if (req.user.role === 'city_admin') {
-        filter = { targetCity: req.user.city, isActive: true };
-    } else if (req.user.role === 'state_admin') {
-        filter = { targetState: req.user.state, isActive: true };
-    } else if (req.user.role === 'central_admin') {
-        filter = { isActive: true }; // All active alerts
-    } else {
-        return res.status(403).json({ message: 'Not authorized' });
-    }
+    try {
+        const { page = 1, limit = 10, state, city, sortBy = 'createdAt', order = 'desc' } = req.query;
 
-    const alerts = await Alert.find(filter).populate('postId').sort({ createdAt: -1 });
-    res.json(alerts);
+        // Filter based on role
+        let filter = { isActive: true };
+
+        if (req.user.role === 'city_admin') {
+            filter.targetCity = req.user.city;
+            filter.targetState = req.user.state;
+        } else if (req.user.role === 'state_admin') {
+            filter.targetState = req.user.state;
+            // State admin can filter by city within their state
+            if (city) {
+                filter.targetCity = city;
+            }
+        } else if (req.user.role === 'central_admin') {
+            // Central admin can filter by state and city
+            if (state) {
+                filter.targetState = state;
+            }
+            if (city) {
+                filter.targetCity = city;
+            }
+        } else if (req.user.role === 'news_admin') {
+            // News admin can see all but typically won't use this endpoint
+            if (state) {
+                filter.targetState = state;
+            }
+            if (city) {
+                filter.targetCity = city;
+            }
+        } else {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        // Calculate pagination
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const sortOrder = order === 'desc' ? -1 : 1;
+
+        // Get total count
+        const total = await Alert.countDocuments(filter);
+
+        // Get alerts with pagination
+        const alerts = await Alert.find(filter)
+            .populate('postId')
+            .sort({ [sortBy]: sortOrder })
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        res.json({
+            alerts,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages: Math.ceil(total / parseInt(limit)),
+                totalAlerts: total,
+                alertsPerPage: parseInt(limit),
+                hasNextPage: skip + alerts.length < total,
+                hasPrevPage: parseInt(page) > 1
+            }
+        });
+    } catch (err) {
+        console.error('Error fetching alerts:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
 // @desc    Acknowledge Alert

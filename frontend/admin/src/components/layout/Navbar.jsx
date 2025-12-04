@@ -22,7 +22,12 @@ const Navbar = () => {
                     </Link>
 
                     <div className="hidden md:flex items-center space-x-6">
-                        <Link to="/admin/dashboard" className="hover:text-red-400 transition-colors">Dashboard</Link>
+                        {user && (['city_admin', 'state_admin', 'central_admin'].includes(user.role)) && (
+                            <Link to="/admin/dashboard" className="hover:text-red-400 transition-colors">Dashboard</Link>
+                        )}
+                        {user && (['news_admin', 'central_admin'].includes(user.role)) && (
+                            <Link to="/admin/news-dashboard" className="hover:text-red-400 transition-colors">📰 News Dashboard</Link>
+                        )}
                         {user && (['central_admin', 'state_admin'].includes(user.role)) && (
                             <Link to="/admin/manage-admins" className="hover:text-red-400 transition-colors">Manage Admins</Link>
                         )}

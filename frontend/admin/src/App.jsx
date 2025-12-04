@@ -4,6 +4,7 @@ import Login from './pages/auth/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import CreateNews from './pages/CreateNews';
 import ManageAdmins from './pages/ManageAdmins';
+import NewsAdminDashboard from './pages/NewsAdminDashboard';
 import useAuthStore from './stores/useAuthStore';
 import Layout from './components/layout/Layout';
 
@@ -30,6 +31,11 @@ function App() {
           <Route path="admin/dashboard" element={
             <ProtectedRoute roles={['city_admin', 'state_admin', 'central_admin']}>
               <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="admin/news-dashboard" element={
+            <ProtectedRoute roles={['news_admin', 'central_admin']}>
+              <NewsAdminDashboard />
             </ProtectedRoute>
           } />
           <Route path="admin/news/create" element={
