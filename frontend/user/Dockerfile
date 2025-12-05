@@ -14,7 +14,7 @@ COPY user/package*.json ./
 RUN npm install
 
 # Copy user source and build
-COPY user ./user
+COPY user .
 WORKDIR /app/user
 RUN npm run build
 

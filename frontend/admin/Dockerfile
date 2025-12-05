@@ -14,7 +14,7 @@ COPY admin/package*.json ./
 RUN npm install
 
 # Copy admin source and build
-COPY admin ./admin
+COPY admin .
 WORKDIR /app/admin
 RUN npm run build
 
