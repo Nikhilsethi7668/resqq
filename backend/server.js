@@ -99,7 +99,7 @@ app.post("/api/ml-mock", (req, res) => {
   res.json({ danger_score: dangerScore, tags: ["fire", "urgent"] });
 });
 
-const PORT = config.PORT;
+const PORT = 7003;
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
