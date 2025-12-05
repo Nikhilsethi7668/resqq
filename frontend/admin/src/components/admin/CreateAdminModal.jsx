@@ -22,6 +22,7 @@ const CreateAdminModal = ({ onClose, onSuccess }) => {
         if (user?.role === 'central_admin') {
             return [
                 { value: 'state_admin', label: 'State Admin' },
+                { value: 'city_admin', label: 'City Admin' },
                 { value: 'central_admin', label: 'Central Admin' },
                 { value: 'news_admin', label: 'News Admin' }
             ];

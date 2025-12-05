@@ -11,21 +11,31 @@ const Login = () => {
     const login = useAuthStore((state) => state.login);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        console.log('Attempting login with:', email);
         try {
             const res = await api.post('/auth/login', { email, password });
+            console.log('Login response:', res.data);
             const userData = res.data;
 
             if (userData.role === 'user') {
+                console.log('User role not authorized');
                 setError('You are not authorized to access the admin panel.');
                 return;
             }
+            console.log('Login successful, updating store...');
             login(userData, userData.token);
+            console.log('Store updated, navigating...');
             navigate('/admin/dashboard');
         } catch (err) {
+            console.error('Login error:', err);
             setError(err.response?.data?.message || 'Login failed');
         }
     };
+
+    React.useEffect(() => {
+        console.log('Login component mounted');
+    }, []);
 
     return (
         <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
@@ -52,7 +62,11 @@ const Login = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                >
                     Login
                 </button>
             </form>

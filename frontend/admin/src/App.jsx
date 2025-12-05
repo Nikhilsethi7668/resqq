@@ -24,34 +24,40 @@ const ProtectedRoute = ({ children, roles = [] }) => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/admin/login" element={<Login />} />
-        <Route path="/" element={<Layout />}>
-          <Route path="admin/dashboard" element={
-            <ProtectedRoute roles={['city_admin', 'state_admin', 'central_admin']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="admin/news-dashboard" element={
-            <ProtectedRoute roles={['news_admin', 'central_admin']}>
-              <NewsAdminDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="admin/news/create" element={
-            <ProtectedRoute roles={['news_admin', 'central_admin']}>
-              <CreateNews />
-            </ProtectedRoute>
-          } />
-          <Route path="admin/manage-admins" element={
-            <ProtectedRoute roles={['central_admin', 'state_admin']}>
-              <ManageAdmins />
-            </ProtectedRoute>
-          } />
-        </Route>
-        <Route path="*" element={<Navigate to="/admin/login" />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/admin/login" element={<Login />} />
+
+      <Route path="/" element={<Layout />}>
+        {/* Redirect root to dashboard */}
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+
+        <Route path="admin/dashboard" element={
+          <ProtectedRoute roles={['city_admin', 'state_admin', 'central_admin']}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path="admin/news-dashboard" element={
+          <ProtectedRoute roles={['news_admin', 'central_admin']}>
+            <NewsAdminDashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path="admin/news/create" element={
+          <ProtectedRoute roles={['news_admin', 'central_admin']}>
+            <CreateNews />
+          </ProtectedRoute>
+        } />
+
+        <Route path="admin/manage-admins" element={
+          <ProtectedRoute roles={['central_admin', 'state_admin']}>
+            <ManageAdmins />
+          </ProtectedRoute>
+        } />
+      </Route>
+
+      <Route path="*" element={<div>404 Not Found</div>} />
+    </Routes>
   );
 }
 

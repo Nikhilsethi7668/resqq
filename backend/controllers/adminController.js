@@ -239,10 +239,10 @@ const createAdmin = async (req, res) => {
 
         // Authorization: Check if current user can create this role
         if (req.user.role === 'central_admin') {
-            // Central admin can create: state_admin, central_admin, news_admin
-            if (!['state_admin', 'central_admin', 'news_admin'].includes(role)) {
+            // Central admin can create: state_admin, central_admin, news_admin, city_admin
+            if (!['state_admin', 'central_admin', 'news_admin', 'city_admin'].includes(role)) {
                 return res.status(403).json({
-                    message: 'Central admin can only create State Admin, Central Admin, or News Admin'
+                    message: 'Central admin can only create State Admin, City Admin, Central Admin, or News Admin'
                 });
             }
         } else if (req.user.role === 'state_admin') {

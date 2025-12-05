@@ -17,7 +17,7 @@ const AdminDashboard = () => {
             const res = await api.get('/admin/alerts', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setAlerts(res.data);
+            setAlerts(res.data.alerts || []);
         } catch (err) {
             console.error(err);
         }
@@ -232,7 +232,7 @@ const AdminDashboard = () => {
                                         >
                                             ✅ Send Help
                                         </button>
-                                        .                                    </div>
+                                    </div>
                                 )}
 
                                 <button
@@ -241,7 +241,7 @@ const AdminDashboard = () => {
                                 >
                                     ✔️ Mark Completed
                                 </button>
-                                )}
+
 
                                 <button
                                     onClick={() => deleteReport(alert.postId._id)}

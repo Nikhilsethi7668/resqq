@@ -12,7 +12,7 @@ const Layout = () => {
     const [currentAlertId, setCurrentAlertId] = useState(null);
 
     useEffect(() => {
-        if (user) {
+        if (user && !socket.connected) {
             socket.connect();
 
             // Join Room
@@ -23,7 +23,7 @@ const Layout = () => {
             });
 
             // Listen for alerts
-            socket.on('new_alert', (data) => {
+            const handleNewAlert = (data) => {
                 console.log("New Alert Received:", data);
                 setCurrentAlertId(data.alertId);
                 startBlinking(`URGENT: ${data.message} in ${data.city}`);
@@ -31,19 +31,23 @@ const Layout = () => {
                 // Play sound
                 const audio = new Audio('/alert.mp3');
                 audio.play().catch(e => console.log("Audio play failed", e));
-            });
+            };
 
-            socket.on('broadcast_msg', (data) => {
+            const handleBroadcast = (data) => {
                 startBlinking(`BROADCAST from ${data.from}: ${data.message}`);
-            });
+            };
+
+            socket.on('new_alert', handleNewAlert);
+            socket.on('broadcast_msg', handleBroadcast);
 
             return () => {
-                socket.off('new_alert');
-                socket.off('broadcast_msg');
-                socket.disconnect();
+                socket.off('new_alert', handleNewAlert);
+                socket.off('broadcast_msg', handleBroadcast);
+                // Do not disconnect here to avoid reconnection loops if component re-renders
+                // socket.disconnect(); 
             };
         }
-    }, [user, startBlinking]);
+    }, [user]); // Only re-run if user changes
 
     const handleAcknowledge = async () => {
         // Send acknowledgment to backend
