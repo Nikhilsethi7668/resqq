@@ -32,6 +32,12 @@ const NewsAdminDashboard = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
 
+            if (!token) {
+                console.error('No token found. Please login.');
+                setLoading(false);
+                return;
+            }
+
             const params = {
                 page: currentPage,
                 limit: 10,
@@ -42,23 +48,48 @@ const NewsAdminDashboard = () => {
             if (stateFilter) params.state = stateFilter;
             if (cityFilter) params.city = cityFilter;
 
+            console.log('Fetching completed posts with params:', params);
+
             const response = await axios.get('http://localhost:5001/api/admin/completed-posts', {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });
 
-            setCompletedPosts(response.data.posts);
-            setPagination(response.data.pagination);
+            console.log('Response received:', response.data);
 
-            // Extract unique states and cities
-            const uniqueStates = [...new Set(response.data.posts.map(p => p.state))];
-            const uniqueCities = [...new Set(response.data.posts.map(p => p.city))];
-            setStates(uniqueStates);
-            setCities(uniqueCities);
+            if (response.data && response.data.posts) {
+                setCompletedPosts(response.data.posts);
+                setPagination(response.data.pagination);
+
+                // Extract unique states and cities
+                const uniqueStates = [...new Set(response.data.posts.map(p => p.state))].filter(Boolean);
+                const uniqueCities = [...new Set(response.data.posts.map(p => p.city))].filter(Boolean);
+                setStates(uniqueStates);
+                setCities(uniqueCities);
+
+                console.log(`Found ${response.data.posts.length} completed posts`);
+            } else {
+                console.warn('Unexpected response format:', response.data);
+                setCompletedPosts([]);
+                setPagination({});
+            }
 
             setLoading(false);
         } catch (error) {
             console.error('Error fetching completed posts:', error);
+            console.error('Error response:', error.response?.data);
+            console.error('Error status:', error.response?.status);
+
+            if (error.response?.status === 401) {
+                alert('Session expired. Please login again.');
+            } else if (error.response?.status === 403) {
+                alert('You do not have permission to view completed posts.');
+            } else {
+                alert('Failed to load completed posts. Please try again.');
+            }
+
+            setCompletedPosts([]);
+            setPagination({});
             setLoading(false);
         }
     };
