@@ -18,8 +18,13 @@ const createPost = async (req, res) => {
             if (req.file.location) {
                 content = req.file.location;
             } else {
+                const config = require('../config/production');
+
+                // ... imports ...
+
+                // Inside createPost function
                 // Construct local URL
-                content = `${process.env.BACKEND_URL || 'http://localhost:5001'}/uploads/${req.file.filename}`;
+                content = `${config.BACKEND_URL}/uploads/${req.file.filename}`;
             }
         }
 
@@ -39,7 +44,7 @@ const createPost = async (req, res) => {
         try {
             const fs = require('fs'); // fs is only needed here for local files
 
-            const mlServiceUrl = process.env.ML_SERVICE_URL || 'http://localhost:5002/predict';
+            const mlServiceUrl = config.ML_SERVICE_URL + '/predict';
             console.log('🤖 Calling ML Service:', mlServiceUrl);
             console.log('📝 Content Type:', type);
 

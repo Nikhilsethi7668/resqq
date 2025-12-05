@@ -1,24 +1,23 @@
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
-const dotenv = require("dotenv");
 const path = require("path");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const config = require("./config/production");
 
-dotenv.config({ path: path.resolve(__dirname, ".env") });
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
 
 const allowedOrigins = [
-  process.env.ADMIN_ORIGIN || "http://localhost:5173",
-  process.env.USER_ORIGIN || "http://localhost:5174",
+  config.ADMIN_ORIGIN,
+  config.USER_ORIGIN,
+  "http://localhost:5173",
+  "http://localhost:5174",
   "http://localhost:5175",
-  "http://localhost:5177",
-  "http://66.94.120.78:7001",
-  "http://66.94.120.78:7002"
+  "http://localhost:5177"
 ];
 
 const io = new Server(server, {
@@ -98,7 +97,7 @@ app.post("/api/ml-mock", (req, res) => {
   res.json({ danger_score: dangerScore, tags: ["fire", "urgent"] });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = config.PORT;
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

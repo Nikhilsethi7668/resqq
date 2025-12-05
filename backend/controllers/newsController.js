@@ -48,8 +48,11 @@ const createNews = async (req, res) => {
         const { title, content, category, relatedPostId } = req.body;
 
         let image = null;
+        const config = require('../config/production');
+
+        // ... inside createNews ...
         if (req.file) {
-            image = req.file.location || `${process.env.BACKEND_URL}/uploads/${req.file.filename}`;
+            image = req.file.location || `${config.BACKEND_URL}/uploads/${req.file.filename}`;
         }
 
         const news = await News.create({
@@ -162,7 +165,7 @@ const updateNews = async (req, res) => {
         if (category) news.category = category;
 
         if (req.file) {
-            news.image = req.file.location || `${process.env.BACKEND_URL}/uploads/${req.file.filename}`;
+            news.image = req.file.location || `${config.BACKEND_URL}/uploads/${req.file.filename}`;
         }
 
         await news.save();

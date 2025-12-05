@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5002';
+const config = require('../config/production');
+
+const ML_SERVICE_URL = config.ML_SERVICE_URL;
 
 // @desc    Get ML service health status
 // @route   GET /api/ml/health

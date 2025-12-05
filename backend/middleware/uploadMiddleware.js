@@ -4,6 +4,8 @@ const s3 = require('../config/s3');
 const path = require('path');
 const fs = require('fs');
 
+const config = require('../config/production');
+
 // Ensure uploads directory exists for local storage
 const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
@@ -11,17 +13,17 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Check if S3 credentials are valid (not placeholders)
-const isS3Configured = process.env.AWS_ACCESS_KEY_ID &&
-    process.env.AWS_ACCESS_KEY_ID !== 'placeholder' &&
-    process.env.AWS_SECRET_ACCESS_KEY &&
-    process.env.AWS_SECRET_ACCESS_KEY !== 'placeholder';
+const isS3Configured = config.AWS_ACCESS_KEY_ID &&
+    config.AWS_ACCESS_KEY_ID !== 'placeholder' &&
+    config.AWS_SECRET_ACCESS_KEY &&
+    config.AWS_SECRET_ACCESS_KEY !== 'placeholder';
 
 let storage;
 
 if (isS3Configured) {
     storage = multerS3({
         s3: s3,
-        bucket: process.env.AWS_BUCKET_NAME,
+        bucket: config.AWS_BUCKET_NAME,
         metadata: function (req, file, cb) {
             cb(null, { fieldName: file.fieldname });
         },

@@ -10,8 +10,6 @@ services:
     restart: unless-stopped
     ports:
       - "7003:7003"
-    env_file:
-      - .env.docker
     environment:
       - NODE_ENV=production
     volumes:

@@ -1,12 +1,7 @@
 const { Resend } = require('resend');
+const config = require('../config/production');
 
-// Check if API key is configured
-if (!process.env.mail_resend_key) {
-    console.error('⚠️ WARNING: mail_resend_key is not configured in .env file!');
-    console.error('📧 Email notifications will NOT work until you add your Resend API key.');
-}
-
-const resend = process.env.mail_resend_key ? new Resend(process.env.mail_resend_key) : null;
+const resend = new Resend(config.RESEND_API_KEY);
 
 const sendAlertEmail = async (toEmails, subject, htmlContent) => {
     try {
@@ -30,7 +25,7 @@ const sendAlertEmail = async (toEmails, subject, htmlContent) => {
         // 1. Verify a domain in Resend dashboard and use email@yourdomain.com
         // 2. Use the Resend testing email: onboarding@resend.dev (for testing only)
 
-        const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+        const fromEmail = config.RESEND_FROM_EMAIL;
 
         console.log('   From:', fromEmail);
 

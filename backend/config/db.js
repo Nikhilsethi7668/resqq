@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const config = require('./production');
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI || "mongodb+srv://resq:resq1234@cluster0.vrl9lv4.mongodb.net/resqq?appName=Cluster0");
+        const conn = await mongoose.connect(config.MONGO_URI);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error(`Error: ${error.message}`);
