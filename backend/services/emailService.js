@@ -6,7 +6,7 @@ if (!process.env.mail_resend_key) {
     console.error('📧 Email notifications will NOT work until you add your Resend API key.');
 }
 
-const resend = new Resend(process.env.mail_resend_key);
+const resend = process.env.mail_resend_key ? new Resend(process.env.mail_resend_key) : null;
 
 const sendAlertEmail = async (toEmails, subject, htmlContent) => {
     try {
@@ -16,8 +16,8 @@ const sendAlertEmail = async (toEmails, subject, htmlContent) => {
             return;
         }
 
-        if (!process.env.mail_resend_key) {
-            console.error('❌ Cannot send email: mail_resend_key not configured');
+        if (!resend) {
+            console.error('❌ Cannot send email: Resend client not initialized (missing API key)');
             return;
         }
 
