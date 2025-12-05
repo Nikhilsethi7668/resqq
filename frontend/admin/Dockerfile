@@ -3,19 +3,15 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy shared package first
-COPY shared/package*.json ./shared/
+# Copy shared directory
+COPY shared ./shared
 WORKDIR /app/shared
-RUN npm ci
+RUN npm install
 
-# Copy admin frontend package
+# Copy admin frontend
 WORKDIR /app/admin
 COPY admin/package*.json ./
-RUN npm ci
-
-# Copy shared source
-WORKDIR /app
-COPY shared ./shared
+RUN npm install
 
 # Copy admin source and build
 COPY admin ./admin
