@@ -9,6 +9,7 @@ import numpy as np
 import os
 import json
 import logging
+from prediction_tracker import PredictionTracker
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -236,6 +237,9 @@ class MLService:
 ml_service = MLService()
 ml_service.load_models()
 
+# Initialize prediction tracker
+tracker = PredictionTracker()
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
@@ -259,6 +263,10 @@ def predict():
                 return jsonify({'error': 'No text provided'}), 400
             
             result = ml_service.predict_text(text)
+            
+            # Log prediction
+            tracker.log_prediction('text', result, text)
+            
             return jsonify(result)
         
         elif content_type == 'image':
@@ -270,6 +278,9 @@ def predict():
             file.save(temp_path)
             
             result = ml_service.predict_image(temp_path)
+            
+            # Log prediction
+            tracker.log_prediction('image', result, f'Image: {file.filename}')
             
             if os.path.exists(temp_path):
                 os.remove(temp_path)
@@ -286,6 +297,9 @@ def predict():
             
             result = ml_service.predict_audio(temp_path)
             
+            # Log prediction
+            tracker.log_prediction('audio', result, f'Audio: {file.filename}')
+            
             if os.path.exists(temp_path):
                 os.remove(temp_path)
             
@@ -298,5 +312,39 @@ def predict():
         logger.error(f"Prediction error: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/stats', methods=['GET'])
+def get_statistics():
+    """Get prediction statistics"""
+    try:
+        days = request.args.get('days', 7, type=int)
+        stats = tracker.get_statistics(days)
+        return jsonify(stats)
+    except Exception as e:
+        logger.error(f"Stats error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/recent', methods=['GET'])
+def get_recent():
+    """Get recent predictions"""
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        predictions = tracker.get_recent_predictions(limit)
+        return jsonify({'predictions': predictions})
+    except Exception as e:
+        logger.error(f"Recent predictions error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/hourly', methods=['GET'])
+def get_hourly():
+    """Get hourly statistics"""
+    try:
+        hours = request.args.get('hours', 24, type=int)
+        stats = tracker.get_hourly_stats(hours)
+        return jsonify({'hourly_stats': stats})
+    except Exception as e:
+        logger.error(f"Hourly stats error: {e}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002, debug=False)
+    port = int(os.environ.get('PORT', 7004))
+    app.run(host='0.0.0.0', port=port, debug=False)

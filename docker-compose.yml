@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: resqq-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: resqq
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - resqq-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/resqq --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: resqq-backend
+    restart: unless-stopped
+    ports:
+      - "7003:7003"
+    environment:
+      - NODE_ENV=production
+      - PORT=7003
+      - MONGO_URI=mongodb://mongodb:27017/resqq
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
+      - ML_SERVICE_URL=http://ml-service:7004
+      - ADMIN_ORIGIN=http://localhost:7002
+      - USER_ORIGIN=http://localhost:7001
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+    networks:
+      - resqq-network
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:7003/api/news" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ML Service
+  ml-service:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: resqq-ml-service
+    restart: unless-stopped
+    ports:
+      - "7004:7004"
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      - ./ai/predictions.db:/app/predictions.db
+      - ml_data:/app/data
+    networks:
+      - resqq-network
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import requests; requests.get('http://localhost:7004/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # User Frontend
+  user-frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./user/Dockerfile
+    container_name: resqq-user-frontend
+    restart: unless-stopped
+    ports:
+      - "7001:80"
+    environment:
+      - VITE_API_URL=http://localhost:7003/api
+      - VITE_SOCKET_URL=http://localhost:7003
+    depends_on:
+      - backend
+    networks:
+      - resqq-network
+
+  # Admin Frontend
+  admin-frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./admin/Dockerfile
+    container_name: resqq-admin-frontend
+    restart: unless-stopped
+    ports:
+      - "7002:80"
+    environment:
+      - VITE_API_URL=http://localhost:7003/api
+      - VITE_SOCKET_URL=http://localhost:7003
+    depends_on:
+      - backend
+    networks:
+      - resqq-network
+
+networks:
+  resqq-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  ml_data:
+    driver: local

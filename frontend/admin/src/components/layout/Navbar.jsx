@@ -31,6 +31,9 @@ const Navbar = () => {
                         {user && (['central_admin', 'state_admin'].includes(user.role)) && (
                             <Link to="/admin/manage-admins" className="hover:text-red-400 transition-colors">Manage Admins</Link>
                         )}
+                        {user && user.role === 'central_admin' && (
+                            <Link to="/admin/ml-dashboard" className="hover:text-red-400 transition-colors">🤖 ML Dashboard</Link>
+                        )}
                         {user && (['news_admin', 'central_admin'].includes(user.role)) && (
                             <Link to="/admin/news/create" className="hover:text-red-400 transition-colors">Create News</Link>
                         )}

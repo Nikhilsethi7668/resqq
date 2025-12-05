@@ -1,0 +1,39 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+
+# Model files (large)
+*.h5
+*.pkl
+*.pth
+*.pt
+
+# Data files
+*.csv
+*.json
+audio_dataset/
+saved_models/
+
+# Temp files
+temp_*
+*.db
+predictions.db
+
+# Logs
+*.log

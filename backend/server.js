@@ -86,6 +86,7 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/news", require("./routes/newsRoutes"));
 app.use("/api/locations", require("./routes/locationRoutes"));
 app.use("/api/admin/alerts", require("./routes/escalationRoutes"));
+app.use("/api/ml", require("./routes/mlRoutes"));
 
 // Mock ML Service Route (for testing)
 app.post("/api/ml-mock", (req, res) => {
