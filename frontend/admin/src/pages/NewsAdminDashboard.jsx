@@ -50,7 +50,7 @@ const NewsAdminDashboard = () => {
 
             console.log('Fetching completed posts with params:', params);
 
-            const response = await axios.get('http://66.94.120.78:7003/api/admin/completed-posts', {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/completed-posts`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });

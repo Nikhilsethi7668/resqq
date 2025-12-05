@@ -15,7 +15,10 @@ const server = http.createServer(app);
 const allowedOrigins = [
   process.env.ADMIN_ORIGIN || "http://localhost:5173",
   process.env.USER_ORIGIN || "http://localhost:5174",
-  "http://localhost:5175", "http://localhost:5177", "http://66.94.120.78:7001", "http://66.94.120.78:7002"
+  "http://localhost:5175",
+  "http://localhost:5177",
+  "http://66.94.120.78:7001",
+  "http://66.94.120.78:7002"
 ];
 
 const io = new Server(server, {

@@ -20,7 +20,7 @@ const ConvertToNewsModal = ({ post, onClose, onSuccess }) => {
             const token = localStorage.getItem('token');
 
             const response = await axios.post(
-                `http://66.94.120.78:7003/api/news/from-post/${post._id}`,
+                `${import.meta.env.VITE_API_URL}/news/from-post/${post._id}`,
                 formData,
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -67,7 +67,7 @@ const ConvertToNewsModal = ({ post, onClose, onSuccess }) => {
 
             // Call the endpoint to get auto-generated content
             const response = await axios.post(
-                `http://66.94.120.78:7003/api/news/from-post/${post._id}`,
+                `${import.meta.env.VITE_API_URL}/news/from-post/${post._id}`,
                 { category: formData.category },
                 {
                     headers: { Authorization: `Bearer ${token}` }

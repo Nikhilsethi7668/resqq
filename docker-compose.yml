@@ -1,24 +1,7 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
-  mongodb:
-    image: mongo:7.0
-    container_name: resqq-mongodb
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_DATABASE: resqq
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - resqq-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/resqq --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Backend API
+  # Backend API - Using MongoDB Atlas (no local MongoDB needed)
   backend:
     build:
       context: ./backend
@@ -27,24 +10,13 @@ services:
     restart: unless-stopped
     ports:
       - "7003:7003"
+    env_file:
+      - .env.docker
     environment:
       - NODE_ENV=production
-      - PORT=7003
-      - MONGO_URI=mongodb://mongodb:27017/resqq
-      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
-      - ML_SERVICE_URL=http://ml-service:7004
-      - ADMIN_ORIGIN=http://localhost:7002
-      - USER_ORIGIN=http://localhost:7001
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=${AWS_REGION}
-      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
     volumes:
       - ./backend/uploads:/app/uploads
     depends_on:
-      mongodb:
-        condition: service_healthy
       ml-service:
         condition: service_started
     networks:
@@ -82,6 +54,9 @@ services:
     build:
       context: ./frontend
       dockerfile: ./user/Dockerfile
+      args:
+        - VITE_API_URL=http://66.94.120.78:7003
+        - VITE_SOCKET_URL=http://66.94.120.78:7003
     container_name: resqq-user-frontend
     restart: unless-stopped
     ports:
@@ -99,6 +74,9 @@ services:
     build:
       context: ./frontend
       dockerfile: ./admin/Dockerfile
+      args:
+        - VITE_API_URL=http://66.94.120.78:7003
+        - VITE_SOCKET_URL=http://66.94.120.78:7003
     container_name: resqq-admin-frontend
     restart: unless-stopped
     ports:
@@ -116,7 +94,5 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data:
-    driver: local
   ml_data:
     driver: local
