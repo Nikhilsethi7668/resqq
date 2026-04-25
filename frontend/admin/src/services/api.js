@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://66.94.120.78:7003/api'
+    baseURL: (import.meta.env.VITE_API_BASE_URL || 'http://localhost:7003') + '/api'
 });
+
 
 // Add token to requests automatically
 api.interceptors.request.use((config) => {

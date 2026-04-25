@@ -1,61 +1,52 @@
-const { Resend } = require('resend');
-const config = require('../config/production');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(config.RESEND_API_KEY);
+// Gmail SMTP transporter
+const createTransporter = () => {
+    return nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER || 'nikhilsethin494@gmail.com',
+            pass: process.env.GMAIL_APP_PASS
+        }
+    });
+};
 
 const sendAlertEmail = async (toEmails, subject, htmlContent) => {
     try {
-        // Validate inputs
         if (!toEmails || toEmails.length === 0) {
             console.log('⚠️ No recipient emails provided, skipping email send');
             return;
         }
 
-        if (!resend) {
-            console.error('❌ Cannot send email: Resend client not initialized (missing API key)');
+        const appPass = process.env.GMAIL_APP_PASS;
+        if (!appPass) {
+            console.error('❌ Cannot send email: GMAIL_APP_PASS not set in .env');
             return;
         }
 
-        console.log('📧 Attempting to send email...');
+        console.log('📧 Attempting to send email via Gmail SMTP...');
         console.log('   To:', toEmails);
         console.log('   Subject:', subject);
 
-        // IMPORTANT: Resend requires a verified domain
-        // You need to either:
-        // 1. Verify a domain in Resend dashboard and use email@yourdomain.com
-        // 2. Use the Resend testing email: onboarding@resend.dev (for testing only)
+        const transporter = createTransporter();
 
-        const fromEmail = config.RESEND_FROM_EMAIL;
-
-        console.log('   From:', fromEmail);
-
-        const data = await resend.emails.send({
-            from: fromEmail,
-            to: toEmails,
+        const info = await transporter.sendMail({
+            from: `"ResQ Connect Alerts" <${process.env.GMAIL_USER || 'nikhilsethin494@gmail.com'}>`,
+            to: toEmails.join(', '),
             subject: subject,
             html: htmlContent
         });
 
         console.log('✅ Email sent successfully!');
-        console.log('   Response:', JSON.stringify(data, null, 2));
-        return data;
+        console.log('   Message ID:', info.messageId);
+        return info;
 
     } catch (error) {
-        console.error('❌ Error sending email:');
-        console.error('   Error message:', error.message);
-        console.error('   Error details:', error);
-
-        // Provide helpful error messages
-        if (error.message.includes('API key')) {
-            console.error('💡 TIP: Check that your Resend API key is correct in .env file');
-        } else if (error.message.includes('domain') || error.message.includes('from')) {
-            console.error('💡 TIP: Resend requires a verified domain. Options:');
-            console.error('   1. Use onboarding@resend.dev for testing (default)');
-            console.error('   2. Verify your domain in Resend dashboard and set RESEND_FROM_EMAIL in .env');
-        } else if (error.message.includes('rate limit')) {
-            console.error('💡 TIP: You may have hit Resend rate limits. Wait a few minutes and try again.');
+        console.error('❌ Error sending email:', error.message);
+        if (error.message.includes('Invalid login') || error.message.includes('Username and Password')) {
+            console.error('💡 TIP: Make sure GMAIL_APP_PASS in .env is a valid Gmail App Password (not your regular Gmail password).');
+            console.error('   Generate one at: https://myaccount.google.com/apppasswords');
         }
-
         return null;
     }
 };

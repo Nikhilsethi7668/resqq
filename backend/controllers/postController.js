@@ -4,6 +4,8 @@ const User = require('../models/User');
 const { sendAlertEmail, createAlertEmailHTML } = require('../services/emailService');
 const axios = require('axios');
 const FormData = require('form-data');
+const config = require('../config/production');
+
 
 // @desc    Create new SOS post
 // @route   POST /api/posts
@@ -18,7 +20,6 @@ const createPost = async (req, res) => {
             if (req.file.location) {
                 content = req.file.location;
             } else {
-                const config = require('../config/production');
 
                 // ... imports ...
 
@@ -61,7 +62,7 @@ const createPost = async (req, res) => {
                         timeout: 10000
                     }
                 );
-
+                
                 console.log('✅ ML Response:', response.data);
                 dangerScore = response.data.danger_score || 70;
                 mlResponse = response.data;
@@ -71,7 +72,6 @@ const createPost = async (req, res) => {
                 // For media files, send the file to ML service
                 const formData = new FormData();
                 formData.append('type', type);
-
                 // Check if file is local or S3
                 if (req.file && req.file.path) {
                     // Local file
@@ -138,9 +138,9 @@ const createPost = async (req, res) => {
 
             const adminEmails = admins.map(a => a.email);
 
-            // TESTING MODE: Send all emails only to nikhilsethin494@gmail.com
+            // TESTING MODE: Send all emails only to ishananand930@gmail.com
             // This prevents errors from non-existent admin emails
-            const testEmail = 'nikhilsethin494@gmail.com';
+            const testEmail = 'ishananand930@gmail.com';
             console.log(`📧 Alert triggered! Sending email to: ${testEmail}`);
             console.log(`   (Would have sent to ${adminEmails.length} admins: ${adminEmails.join(', ')})`);
 
@@ -281,7 +281,8 @@ const handleMLCallback = async (req, res) => {
             const adminEmails = admins.map(a => a.email);
 
             // TESTING MODE: Send all emails only to nikhilsethin494@gmail.com
-            const testEmail = 'nikhilsethin494@gmail.com';
+            // nikhilsethin494@gmail.com
+            const testEmail = 'ishananand930@gmail.com';
             console.log(`📧 Alert triggered! Sending email to: ${testEmail}`);
             console.log(`   (Would have sent to ${adminEmails.length} admins: ${adminEmails.join(', ')})`);
 

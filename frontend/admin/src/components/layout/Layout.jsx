@@ -12,42 +12,49 @@ const Layout = () => {
     const [currentAlertId, setCurrentAlertId] = useState(null);
 
     useEffect(() => {
-        if (user && !socket.connected) {
-            socket.connect();
+        if (!user) return;
 
-            // Join Room
+        const handleConnect = () => {
+            console.log("Socket connected, joining room");
             socket.emit('join_room', {
                 role: user.role,
                 city: user.city,
                 state: user.state
             });
+        };
 
-            // Listen for alerts
-            const handleNewAlert = (data) => {
-                console.log("New Alert Received:", data);
-                setCurrentAlertId(data.alertId);
-                startBlinking(`URGENT: ${data.message} in ${data.city}`);
+        socket.on('connect', handleConnect);
 
-                // Play sound
-                const audio = new Audio('/alert.mp3');
-                audio.play().catch(e => console.log("Audio play failed", e));
-            };
-
-            const handleBroadcast = (data) => {
-                startBlinking(`BROADCAST from ${data.from}: ${data.message}`);
-            };
-
-            socket.on('new_alert', handleNewAlert);
-            socket.on('broadcast_msg', handleBroadcast);
-
-            return () => {
-                socket.off('new_alert', handleNewAlert);
-                socket.off('broadcast_msg', handleBroadcast);
-                // Do not disconnect here to avoid reconnection loops if component re-renders
-                // socket.disconnect(); 
-            };
+        if (socket.connected) {
+            handleConnect();
+        } else {
+            socket.connect();
         }
-    }, [user]); // Only re-run if user changes
+
+        // Listen for alerts
+        const handleNewAlert = (data) => {
+            console.log("New Alert Received:", data);
+            setCurrentAlertId(data.alertId);
+            startBlinking(`URGENT: ${data.message} in ${data.city}`);
+
+            // Play sound
+            const audio = new Audio('/alert.mp3');
+            audio.play().catch(e => console.log("Audio play failed", e));
+        };
+
+        const handleBroadcast = (data) => {
+            startBlinking(`BROADCAST from ${data.from}: ${data.message}`);
+        };
+
+        socket.on('new_alert', handleNewAlert);
+        socket.on('broadcast_msg', handleBroadcast);
+
+        return () => {
+            socket.off('connect', handleConnect);
+            socket.off('new_alert', handleNewAlert);
+            socket.off('broadcast_msg', handleBroadcast);
+        };
+    }, [user]); // Re-run if user changes
 
     const handleAcknowledge = async () => {
         // Send acknowledgment to backend
@@ -68,10 +75,10 @@ const Layout = () => {
     };
 
     return (
-        <div className={`min-h-screen flex flex-col ${isBlinking ? 'animate-pulse bg-red-500' : 'bg-slate-50'}`}>
+        <div className={`min-h-screen flex flex-col ${isBlinking ? 'bg-red-500' : 'bg-slate-50'}`}>
             {isBlinking && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-red-600 bg-opacity-90 animate-pulse">
-                    <div className="bg-white p-8 rounded-lg shadow-2xl text-center max-w-lg">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-red-600 bg-opacity-90">
+                    <div className="bg-white p-8 rounded-lg shadow-2xl text-center max-w-lg animate-lub-dub">
                         <h1 className="text-4xl font-bold text-red-600 mb-4">🚨 ALERT 🚨</h1>
                         <p className="text-xl font-semibold mb-6">{alertMessage}</p>
                         <button

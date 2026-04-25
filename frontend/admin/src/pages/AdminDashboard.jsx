@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import useAuthStore from '../stores/useAuthStore';
-import { Shield, CheckCircle, AlertTriangle, Send, Radio } from 'lucide-react';
+import { Shield, CheckCircle, AlertTriangle, Send, Radio, Bell } from 'lucide-react';
 
 const AdminDashboard = () => {
+    const prevPendingCountRef = useRef(0);
+    const [isPulsing, setIsPulsing] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const { token, user } = useAuthStore();
     const [helpText, setHelpText] = useState('');
@@ -17,7 +19,19 @@ const AdminDashboard = () => {
             const res = await api.get('/admin/alerts', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setAlerts(res.data.alerts || []);
+            const fetchedAlerts = res.data.alerts || [];
+            
+            const currentPending = fetchedAlerts.filter(a => a.postId?.status === 'pending').length;
+            
+            if (currentPending > prevPendingCountRef.current) {
+                // Trigger the 'lub-dub' animation if pending alerts increased (new report came)
+                setIsPulsing(true);
+                // Keep it animating for 15 seconds so admin can see it, or until they take action
+                setTimeout(() => setIsPulsing(false), 15000);
+            }
+            
+            prevPendingCountRef.current = currentPending;
+            setAlerts(fetchedAlerts);
         } catch (err) {
             console.error(err);
         }
@@ -85,13 +99,21 @@ const AdminDashboard = () => {
                         {user.state && ` | State: ${user.state}`}
                     </p>}
                 </div>
-                <button
-                    onClick={() => setShowBroadcast(!showBroadcast)}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-                >
-                    <Radio size={20} />
-                    <span>Broadcast Alert</span>
-                </button>
+                <div className="flex items-center space-x-4">
+                    {isPulsing && (
+                        <div className="flex items-center text-red-600 animate-lub-dub font-bold bg-red-100 px-4 py-2 rounded-full border border-red-300">
+                            <Bell size={20} className="mr-2" />
+                            <span>New Report Received!</span>
+                        </div>
+                    )}
+                    <button
+                        onClick={() => setShowBroadcast(!showBroadcast)}
+                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                    >
+                        <Radio size={20} />
+                        <span>Broadcast Alert</span>
+                    </button>
+                </div>
             </div>
 
             {/* Broadcast Modal */}
@@ -139,11 +161,11 @@ const AdminDashboard = () => {
 
             {/* Stats */}
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-lg shadow">
+                <div className={`bg-white p-6 rounded-lg shadow transition-all duration-300 ${isPulsing ? 'border-4 border-red-500 animate-lub-dub shadow-red-300' : ''}`}>
                     <h3 className="text-gray-600 text-sm font-semibold">Active Alerts</h3>
-                    <p className="text-3xl font-bold text-red-600">{alerts.length}</p>
+                    <p className={`text-3xl font-bold ${isPulsing ? 'text-red-700' : 'text-red-600'}`}>{alerts.length}</p>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow">
+                <div className={`bg-white p-6 rounded-lg shadow transition-all duration-300 ${isPulsing ? 'border-4 border-yellow-400 bg-yellow-50 animate-lub-dub shadow-yellow-200' : ''}`}>
                     <h3 className="text-gray-600 text-sm font-semibold">Pending</h3>
                     <p className="text-3xl font-bold text-yellow-600">
                         {alerts.filter(a => a.postId?.status === 'pending').length}
