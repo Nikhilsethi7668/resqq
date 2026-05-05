@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const PostSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
     type: { type: String, enum: ['text', 'image', 'audio'], required: true },
-    content: { type: String, required: true }, // Text content or S3 URL
+    content: { type: String, required: true }, // Media URL or primary text if no media
+    textContent: { type: String }, // Optional text description alongside media
     city: { type: String, required: true },
     state: { type: String, required: true },
     status: {

@@ -7,7 +7,7 @@ import useAuthStore from '../../stores/useAuthStore';
 import { socket } from '../../services/socket';
 
 const Layout = () => {
-    const { isBlinking, alertMessage, startBlinking, stopBlinking } = useUIStore();
+    const { isBlinking, alertMessage, startBlinking, stopBlinking, playAlertSound } = useUIStore();
     const { user, token } = useAuthStore();
     const [currentAlertId, setCurrentAlertId] = useState(null);
 
@@ -36,14 +36,12 @@ const Layout = () => {
             console.log("New Alert Received:", data);
             setCurrentAlertId(data.alertId);
             startBlinking(`URGENT: ${data.message} in ${data.city}`);
-
-            // Play sound
-            const audio = new Audio('/alert.mp3');
-            audio.play().catch(e => console.log("Audio play failed", e));
+            playAlertSound();
         };
 
         const handleBroadcast = (data) => {
             startBlinking(`BROADCAST from ${data.from}: ${data.message}`);
+            playAlertSound();
         };
 
         socket.on('new_alert', handleNewAlert);
@@ -77,8 +75,8 @@ const Layout = () => {
     return (
         <div className={`min-h-screen flex flex-col ${isBlinking ? 'bg-red-500' : 'bg-slate-50'}`}>
             {isBlinking && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-red-600 bg-opacity-90">
-                    <div className="bg-white p-8 rounded-lg shadow-2xl text-center max-w-lg animate-lub-dub">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-red-600 bg-opacity-90 animate-lub-dub">
+                    <div className="bg-white p-8 rounded-lg shadow-2xl text-center max-w-lg">
                         <h1 className="text-4xl font-bold text-red-600 mb-4">🚨 ALERT 🚨</h1>
                         <p className="text-xl font-semibold mb-6">{alertMessage}</p>
                         <button

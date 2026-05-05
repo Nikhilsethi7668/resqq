@@ -52,14 +52,33 @@ const PostDetails = () => {
                 <span className="ml-4 text-gray-500">Danger Level: {post.dangerLevel}</span>
             </div>
 
-            <div className="mb-6">
-                <h3 className="font-bold text-lg">Content:</h3>
-                {post.type === 'image' ? (
-                    <img src={post.contentUrl} alt="Evidence" className="max-w-full rounded mt-2" />
-                ) : post.type === 'audio' ? (
-                    <audio controls src={post.contentUrl} className="mt-2" />
-                ) : (
-                    <p className="mt-2 p-4 bg-gray-100 rounded">{post.textContent}</p>
+            <div className="mb-6 border p-4 rounded bg-gray-50">
+                <h3 className="font-bold text-lg mb-2">Report Content:</h3>
+                
+                {/* Text Description */}
+                {(post.textContent || (post.type === 'text' && post.content)) && (
+                    <p className="mt-2 mb-4 whitespace-pre-wrap text-gray-800 text-lg">
+                        {post.type === 'text' ? post.content : post.textContent}
+                    </p>
+                )}
+
+                {/* Media Content */}
+                {post.type === 'image' && (
+                    <div className="mt-2">
+                        <img src={post.content} alt="Evidence" className="max-w-full rounded-lg shadow-sm border" />
+                    </div>
+                )}
+                
+                {post.type === 'audio' && (
+                    <div className="mt-2">
+                        <p className="text-sm font-semibold text-gray-600 mb-1">Voice Recording:</p>
+                        <audio controls className="w-full">
+                            <source src={post.content} type="audio/webm" />
+                            <source src={post.content} type="audio/mpeg" />
+                            <source src={post.content} type="audio/wav" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
                 )}
             </div>
 

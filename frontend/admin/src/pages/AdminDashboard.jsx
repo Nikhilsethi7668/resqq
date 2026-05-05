@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import useAuthStore from '../stores/useAuthStore';
-import { Shield, CheckCircle, AlertTriangle, Send, Radio, Bell } from 'lucide-react';
+import { Shield, CheckCircle, AlertTriangle, Send, Radio, Bell, Play, Volume2, VolumeX } from 'lucide-react';
+import useUIStore from '../stores/useUIStore';
 
 const AdminDashboard = () => {
     const prevPendingCountRef = useRef(0);
     const [isPulsing, setIsPulsing] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const { token, user } = useAuthStore();
+    const { startBlinking, soundEnabled, toggleSound, playAlertSound } = useUIStore();
     const [helpText, setHelpText] = useState('');
     const [selectedAlert, setSelectedAlert] = useState(null);
     const [showBroadcast, setShowBroadcast] = useState(false);
@@ -26,6 +28,8 @@ const AdminDashboard = () => {
             if (currentPending > prevPendingCountRef.current) {
                 // Trigger the 'lub-dub' animation if pending alerts increased (new report came)
                 setIsPulsing(true);
+                startBlinking(`NEW REPORT: ${fetchedAlerts[0]?.targetCity || 'Unknown Location'}`);
+                playAlertSound();
                 // Keep it animating for 15 seconds so admin can see it, or until they take action
                 setTimeout(() => setIsPulsing(false), 15000);
             }
@@ -107,8 +111,26 @@ const AdminDashboard = () => {
                         </div>
                     )}
                     <button
+                        onClick={toggleSound}
+                        className={`px-6 py-3 rounded-lg flex items-center space-x-2 shadow-lg transition-colors ${soundEnabled ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-400 hover:bg-gray-500 text-white'}`}
+                        title="Toggle Sound Notifications"
+                    >
+                        {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+                        <span>{soundEnabled ? 'Sound On' : 'Sound Off'}</span>
+                    </button>
+                    <button
+                        onClick={() => {
+                            startBlinking("SIMULATED EMERGENCY: This is a test of the lub-dub alert feature.");
+                            playAlertSound();
+                        }}
+                        className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center space-x-2 shadow-lg"
+                    >
+                        <Play size={20} />
+                        <span>Test Lub-Dub</span>
+                    </button>
+                    <button
                         onClick={() => setShowBroadcast(!showBroadcast)}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center space-x-2 shadow-lg"
                     >
                         <Radio size={20} />
                         <span>Broadcast Alert</span>
@@ -206,12 +228,28 @@ const AdminDashboard = () => {
                                 </p>
                                 <div className="mt-3 p-3 bg-gray-50 rounded border">
                                     <p className="font-semibold text-sm text-gray-700 mb-1">Content:</p>
-                                    {alert.postId?.type === 'image' ? (
-                                        <img src={alert.postId.content} alt="Evidence" className="max-w-xs rounded mt-2" />
-                                    ) : alert.postId?.type === 'audio' ? (
-                                        <audio controls src={alert.postId.content} className="mt-2" />
-                                    ) : (
-                                        <p className="text-gray-800">{alert.postId?.textContent}</p>
+                                    
+                                    {/* Always show text description if it exists */}
+                                    {(alert.postId?.textContent || (alert.postId?.type === 'text' && alert.postId?.content)) && (
+                                        <p className="text-gray-800 mb-2">
+                                            {alert.postId?.type === 'text' ? alert.postId?.content : alert.postId?.textContent}
+                                        </p>
+                                    )}
+
+                                    {/* Show Media if present */}
+                                    {alert.postId?.type === 'image' && (
+                                        <img src={alert.postId.content} alt="Evidence" className="max-w-xs rounded mt-2 border" />
+                                    )}
+                                    
+                                    {alert.postId?.type === 'audio' && (
+                                        <div className="mt-2">
+                                            <audio controls className="w-full max-w-md">
+                                                <source src={alert.postId.content} type="audio/webm" />
+                                                <source src={alert.postId.content} type="audio/mpeg" />
+                                                <source src={alert.postId.content} type="audio/wav" />
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        </div>
                                     )}
                                 </div>
 

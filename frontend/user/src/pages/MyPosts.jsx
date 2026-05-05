@@ -85,7 +85,12 @@ const MyPosts = () => {
                                 {post.type === 'audio' && (
                                     <div className="mt-2">
                                         <p className="text-xs font-bold text-gray-500 uppercase mb-1">Attached Audio:</p>
-                                        <audio controls src={post.content} className="w-full max-w-md" />
+                                        <audio controls className="w-full max-w-md">
+                                            <source src={post.content} type="audio/webm" />
+                                            <source src={post.content} type="audio/mpeg" />
+                                            <source src={post.content} type="audio/wav" />
+                                            Your browser does not support the audio element.
+                                        </audio> 
                                     </div>
                                 )}
                             </div>

@@ -1,8 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-
 const config = require('../config/production');
-
 const generateToken = (id) => {
     return jwt.sign({ id }, config.JWT_SECRET, { expiresIn: '30d' });
 };
@@ -12,7 +10,6 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = async (req, res) => {
     const { name, email, password, phone, city, state, aadhar } = req.body;
-
     const userExists = await User.findOne({ email });
 
     if (userExists) {
@@ -60,7 +57,6 @@ const loginUser = async (req, res) => {
         if (!user.isActive) {
             return res.status(403).json({ message: 'Account has been deactivated. Please contact administrator.' });
         }
-
         res.json({
             _id: user._id,
             name: user.name,

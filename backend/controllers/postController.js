@@ -34,6 +34,7 @@ const createPost = async (req, res) => {
             userId: req.user ? req.user._id : null,
             type,
             content,
+            textContent: (type === 'image' || type === 'audio') ? textContent : null,
             city,
             state
         });

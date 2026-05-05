@@ -27,16 +27,18 @@ ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install serve to run the application
+RUN npm install -g serve
 
 # Copy built assets from builder
-COPY --from=builder /app/admin/dist /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY admin/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/admin/dist ./dist
 
 # Expose port
 EXPOSE 80
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start serve for SPA
+CMD ["serve", "-s", "dist", "-l", "80"]
