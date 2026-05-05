@@ -22,7 +22,7 @@ if lsof -Pi :5002 -sTCP:LISTEN -t >/dev/null ; then
     echo "✅ ML Service is RUNNING on port 5002"
     echo ""
     echo "Testing ML service..."
-    curl -s http://localhost:5002/health | python3 -m json.tool
+    curl -s http://45.137.194.145:5002/health | python3 -m json.tool
     echo ""
 else
     echo "⚠️  ML Service is NOT running"
@@ -57,7 +57,7 @@ case $choice in
         echo "   No additional setup needed."
         echo ""
         echo "Test it with:"
-        echo "   curl -X POST http://localhost:5002/predict -d 'type=text&text=flood emergency'"
+        echo "   curl -X POST http://45.137.194.145:5002/predict -d 'type=text&text=flood emergency'"
         ;;
     2)
         echo ""
@@ -96,11 +96,11 @@ case $choice in
         echo "🧪 Testing ML Service..."
         echo ""
         echo "Health Check:"
-        curl -s http://localhost:5002/health | python3 -m json.tool
+        curl -s http://45.137.194.145:5002/health | python3 -m json.tool
         echo ""
         echo ""
         echo "Prediction Test:"
-        curl -s -X POST http://localhost:5002/predict \
+        curl -s -X POST http://45.137.194.145:5002/predict \
           -d "type=text&text=There is a massive earthquake, building collapsed" \
           | python3 -m json.tool
         ;;

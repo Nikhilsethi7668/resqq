@@ -76,7 +76,7 @@ The email now looks like this:
 
 ### Option 1: Create a Real SOS (Recommended)
 
-1. Go to user frontend: `http://localhost:5174`
+1. Go to user frontend: `http://45.137.194.145:5174`
 2. Login as a user
 3. Click "REPORT EMERGENCY"
 4. Enter:

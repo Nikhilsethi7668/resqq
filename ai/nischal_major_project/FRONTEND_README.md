@@ -14,7 +14,7 @@ python app.py
 
 3. Open browser and go to:
 ```
-http://localhost:5000
+http://45.137.194.145:5000
 ```
 
 ## Features

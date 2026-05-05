@@ -16,12 +16,18 @@ const server = http.createServer(app);
 const allowedOrigins = [
   config.ADMIN_ORIGIN,
   config.USER_ORIGIN,
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5175",
-  "http://localhost:5177",
-  "http://localhost:7002",
-  "http://localhost:7001",
+  "http://45.137.194.145:5173",
+  "http://45.137.194.145:5174",
+  "http://45.137.194.145:5175",
+  "http://45.137.194.145:5177",
+  "http://45.137.194.145:7002",
+  "http://45.137.194.145:7001",
+  "http://45.137.194.145:5173",
+  "http://45.137.194.145:5174",
+  "http://45.137.194.145:5175",
+  "http://45.137.194.145:5177",
+  "http://45.137.194.145:7002",
+  "http://45.137.194.145:7001",
 ];
 
 const io = new Server(server, {

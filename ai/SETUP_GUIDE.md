@@ -23,8 +23,8 @@ Your AI folder contains 3 separate disaster classification systems:
 
 To verify:
 ```bash
-curl http://localhost:5002/health
-```
+curl http://45.137.194.145:5002/health
+
 
 ---
 
@@ -165,10 +165,10 @@ Test the current ML service:
 
 ```bash
 # Test health
-curl http://localhost:5002/health
+curl http://45.137.194.145:5002/health
 
 # Test prediction
-curl -X POST http://localhost:5002/predict \
+curl -X POST http://45.137.194.145:5002/predict \
   -d "type=text&text=There is a massive earthquake, building collapsed"
 
 # Expected response:

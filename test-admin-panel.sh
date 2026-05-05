@@ -7,7 +7,7 @@ echo ""
 
 # Test 1: Backend Running
 echo "1️⃣ Testing Backend (Port 5001)..."
-if curl -s http://localhost:5001/api/news > /dev/null 2>&1; then
+if curl -s http://45.137.194.145:5001/api/news > /dev/null 2>&1; then
     echo "   ✅ Backend is running on port 5001"
 else
     echo "   ❌ Backend not responding on port 5001"
@@ -18,7 +18,7 @@ fi
 # Test 2: Frontend Running
 echo ""
 echo "2️⃣ Testing Frontend (Port 5173)..."
-if curl -s http://localhost:5173 > /dev/null 2>&1; then
+if curl -s http://45.137.194.145:5173 > /dev/null 2>&1; then
     echo "   ✅ Frontend is running on port 5173"
 else
     echo "   ❌ Frontend not responding on port 5173"
@@ -29,7 +29,7 @@ fi
 # Test 3: Completed Posts Endpoint
 echo ""
 echo "3️⃣ Testing Completed Posts API..."
-RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5001/api/admin/completed-posts)
+RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://45.137.194.145:5001/api/admin/completed-posts)
 if [ "$RESPONSE" == "401" ]; then
     echo "   ✅ API endpoint exists (401 = needs auth, which is correct)"
 elif [ "$RESPONSE" == "200" ]; then
@@ -50,9 +50,9 @@ echo "✅ SYSTEM CHECK COMPLETE!"
 echo "===================================="
 echo ""
 echo "📋 Access Points:"
-echo "   Admin Login: http://localhost:5173/admin/login"
-echo "   News Dashboard: http://localhost:5173/admin/news-dashboard"
-echo "   Main Dashboard: http://localhost:5173/admin/dashboard"
+echo "   Admin Login: http://45.137.194.145:5173/admin/login"
+echo "   News Dashboard: http://45.137.194.145:5173/admin/news-dashboard"
+echo "   Main Dashboard: http://45.137.194.145:5173/admin/dashboard"
 echo ""
 echo "🔑 Central Admin Login:"
 echo "   Email: nikhilsethin494@gmail.com"

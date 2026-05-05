@@ -58,7 +58,7 @@ npm install
 3. Create `.env` file:
 ```env
 PORT=5001
-MONGO_URI=mongodb://localhost:27017/resqq
+MONGO_URI=mongodb://45.137.194.145:27017/resqq
 JWT_SECRET=your_secret_key_here
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
@@ -66,7 +66,7 @@ AWS_REGION=us-east-1
 AWS_BUCKET_NAME=your-bucket-name
 MAILTRAP_USER=your_mailtrap_user
 MAILTRAP_PASS=your_mailtrap_password
-ML_SERVICE_URL=http://localhost:5001/api/ml-mock
+ML_SERVICE_URL=http://45.137.194.145:5001/api/ml-mock
 ```
 
 4. Start MongoDB:
@@ -79,7 +79,7 @@ mongod
 npm run dev
 ```
 
-Backend will run on `http://localhost:5001`
+Backend will run on `http://45.137.194.145:5001`
 
 ### Frontend Setup
 
@@ -98,12 +98,12 @@ npm install
 npm run dev
 ```
 
-Frontend will run on `http://localhost:5173`
+Frontend will run on `http://45.137.194.145:5173`
 
 ## Usage Guide
 
 ### 1. Register Users
-- Open `http://localhost:5173/register`
+- Open `http://45.137.194.145:5173/register`
 - Create accounts with different roles:
   - **User** - Can create SOS reports
   - **City Admin** - Manages alerts for their city

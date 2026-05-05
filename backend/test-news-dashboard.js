@@ -7,7 +7,7 @@ async function testCompletedPostsEndpoint() {
 
         // First, login as news admin
         console.log('1️⃣ Logging in as news admin...');
-        const loginResponse = await axios.post('http://localhost:5001/api/auth/login', {
+        const loginResponse = await axios.post('http://45.137.194.145:5001/api/auth/login', {
             email: 'newsadmin@test.com',  // From seed-test-data.js
             password: 'admin123'
         });
@@ -20,7 +20,7 @@ async function testCompletedPostsEndpoint() {
 
         // Now fetch completed posts
         console.log('\n2️⃣ Fetching completed posts...');
-        const postsResponse = await axios.get('http://localhost:5001/api/admin/completed-posts', {
+        const postsResponse = await axios.get('http://45.137.194.145:5001/api/admin/completed-posts', {
             headers: {
                 'Authorization': `Bearer ${token}`
             },

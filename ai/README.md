@@ -97,7 +97,7 @@ This generates:
 python app.py
 ```
 
-Visit `http://localhost:5000` to use the web interface for real-time audio classification.
+Visit `http://45.137.194.145:5000` to use the web interface for real-time audio classification.
 
 ## 🧠 Model Architectures
 
@@ -178,7 +178,7 @@ import requests
 
 # Upload audio file for prediction
 files = {'audio': open('sample_audio.wav', 'rb')}
-response = requests.post('http://localhost:5000/predict', files=files)
+response = requests.post('http://45.137.194.145:5000/predict', files=files)
 result = response.json()
 
 print(f"Predicted disaster: {result['disaster_type']}")

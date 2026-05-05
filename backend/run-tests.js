@@ -11,9 +11,9 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-const BASE_URL = 'http://localhost:5001/api';
-const FRONTEND_USER_URL = 'http://localhost:5174';
-const FRONTEND_ADMIN_URL = 'http://localhost:5173';
+const BASE_URL = 'http://45.137.194.145:5001/api';
+const FRONTEND_USER_URL = 'http://45.137.194.145:5174';
+const FRONTEND_ADMIN_URL = 'http://45.137.194.145:5173';
 
 // Test results storage
 const testResults = {
@@ -433,10 +433,10 @@ async function runAllTests() {
     console.log(`${colors.blue}${'='.repeat(80)}${colors.reset}\n`);
 
     console.log(`${colors.yellow}⚠️  Prerequisites:${colors.reset}`);
-    console.log(`   - Backend running on http://localhost:5001`);
+    console.log(`   - Backend running on http://45.137.194.145:5001`);
     console.log(`   - Database seeded with test data (run: node seed-test-data.js)`);
-    console.log(`   - User frontend running on http://localhost:5174`);
-    console.log(`   - Admin frontend running on http://localhost:5173\n`);
+    console.log(`   - User frontend running on http://45.137.194.145:5174`);
+    console.log(`   - Admin frontend running on http://45.137.194.145:5173\n`);
 
     try {
         await testAuthentication();

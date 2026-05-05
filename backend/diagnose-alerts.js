@@ -3,7 +3,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const API_URL = process.env.BACKEND_URL || 'http://localhost:5000';
+const API_URL = process.env.BACKEND_URL || 'http://45.137.194.145:5000';
 
 console.log('🔍 ResQQ Alert System Diagnostic\n');
 console.log('='.repeat(60));

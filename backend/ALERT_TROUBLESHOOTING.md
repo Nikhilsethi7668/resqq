@@ -82,7 +82,7 @@ You should see your user object with `role: "central_admin"`.
 
 ### Test 2: Create High-Danger SOS
 
-1. Go to user frontend: `http://localhost:5174`
+1. Go to user frontend: `http://45.137.194.145:5174`
 2. Login as a user
 3. Create SOS with:
    - **Content**: "FIRE! URGENT! HELP NEEDED!"
@@ -121,7 +121,7 @@ Sometimes the frontend caches old code:
 
 In `frontend/admin/src/stores/useSocketStore.js`, verify:
 ```javascript
-const SOCKET_URL = 'http://localhost:5001';  // Should match backend port
+const SOCKET_URL = 'http://45.137.194.145:5001';  // Should match backend port
 ```
 
 And in `frontend/admin/src/services/socket.js` (if it exists).
@@ -140,7 +140,7 @@ npm install socket.io-client
 ### Issue: CORS error in console
 **Fix:** Backend `.env` should have:
 ```env
-ADMIN_ORIGIN=http://localhost:5173
+ADMIN_ORIGIN=http://45.137.194.145:5173
 ```
 
 ### Issue: Alert shows for state admin but not central admin

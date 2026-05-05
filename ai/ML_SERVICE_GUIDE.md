@@ -34,19 +34,19 @@ cd ai
 python ml_service.py
 ```
 
-The service will start on `http://localhost:5002`
+The service will start on `http://45.137.194.145:5002`
 
 ### 4. Test ML Service
 ```bash
 # Health check
-curl http://localhost:5002/health
+curl http://45.137.194.145:5002/health
 
 # Test text prediction
-curl -X POST http://localhost:5002/predict \
+curl -X POST http://45.137.194.145:5002/predict \
   -d "type=text&text=There is a massive flood in the city"
 
 # Test image prediction
-curl -X POST http://localhost:5002/predict \
+curl -X POST http://45.137.194.145:5002/predict \
   -F "type=image" \
   -F "file=@path/to/image.jpg"
 ```
@@ -54,7 +54,7 @@ curl -X POST http://localhost:5002/predict \
 ### 5. Configure Backend
 Update `backend/.env`:
 ```
-ML_SERVICE_URL=http://localhost:5002/predict
+ML_SERVICE_URL=http://45.137.194.145:5002/predict
 ```
 
 ## API Endpoints

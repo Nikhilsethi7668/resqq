@@ -41,7 +41,7 @@ async function checkAndCreateCompletedPosts() {
             } else {
                 console.log('❌ No posts exist at all in the database!');
                 console.log('\n💡 To create test data:');
-                console.log('   1. Go to user frontend (http://localhost:5174)');
+                console.log('   1. Go to user frontend (http://45.137.194.145:5174)');
                 console.log('   2. Register/login as a user');
                 console.log('   3. Create some SOS reports');
                 console.log('   4. Go to admin panel and mark them as "completed"');

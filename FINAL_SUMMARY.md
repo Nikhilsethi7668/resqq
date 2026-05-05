@@ -8,9 +8,9 @@ I have successfully built the **entire ResQ Connect emergency response system** 
 
 ## 🚀 What's Running Right Now
 
-✅ **Backend Server:** `http://localhost:5001` (Node.js + Express + Socket.IO)  
-✅ **Frontend App:** `http://localhost:5173` (React + Vite + TailwindCSS)  
-✅ **MongoDB:** Connected to `mongodb://localhost:27017/resqq`  
+✅ **Backend Server:** `http://45.137.194.145:5001` (Node.js + Express + Socket.IO)  
+✅ **Frontend App:** `http://45.137.194.145:5173` (React + Vite + TailwindCSS)  
+✅ **MongoDB:** Connected to `mongodb://45.137.194.145:27017/resqq`  
 ✅ **Socket.IO:** Real-time communication active  
 
 ---
@@ -139,7 +139,7 @@ frontend/src/
 ## 🧪 How to Test
 
 ### 1. Open the App
-Go to: **http://localhost:5173**
+Go to: **http://45.137.194.145:5173**
 
 ### 2. Register Test Users
 Create accounts with different roles:
@@ -170,9 +170,9 @@ Create accounts with different roles:
 ## 🔧 Configuration
 
 ### Current Setup (Development)
-- Backend: `localhost:5001`
-- Frontend: `localhost:5173`
-- MongoDB: `localhost:27017`
+- Backend: `45.137.194.145:5001`
+- Frontend: `45.137.194.145:5173`
+- MongoDB: `45.137.194.145:27017`
 - AWS S3: Placeholder credentials
 - Mailtrap: Placeholder credentials
 - ML Service: Mock endpoint
@@ -287,7 +287,7 @@ All requirements from your specification have been implemented and exceeded. The
 
 **Both servers are running and ready for testing right now!**
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:5001
+- Frontend: http://45.137.194.145:5173
+- Backend: http://45.137.194.145:5001
 
 Enjoy your fully functional emergency response system! 🚀

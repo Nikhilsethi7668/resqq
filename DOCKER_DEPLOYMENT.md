@@ -35,10 +35,10 @@ docker-compose ps
 ```
 
 ### 3. Access the Application
-- **User Frontend**: http://localhost:7001
-- **Admin Frontend**: http://localhost:7002
-- **Backend API**: http://localhost:7003
-- **ML Service**: http://localhost:7004
+- **User Frontend**: http://45.137.194.145:7001
+- **Admin Frontend**: http://45.137.194.145:7002
+- **Backend API**: http://45.137.194.145:7003
+- **ML Service**: http://45.137.194.145:7004
 
 ---
 
@@ -126,9 +126,9 @@ openssl rand -base64 32
 
 ### 2. Configure Reverse Proxy (Nginx/Caddy)
 Point your domains to the respective ports:
-- `app.yourdomain.com` → `localhost:7001`
-- `admin.yourdomain.com` → `localhost:7002`
-- `api.yourdomain.com` → `localhost:7003`
+- `app.yourdomain.com` → `45.137.194.145:7001`
+- `admin.yourdomain.com` → `45.137.194.145:7002`
+- `api.yourdomain.com` → `45.137.194.145:7003`
 
 ### 3. Enable HTTPS
 Use Let's Encrypt with Certbot or Caddy for automatic SSL.
@@ -178,7 +178,7 @@ docker-compose build --no-cache admin-frontend
 docker-compose logs ml-service
 
 # Test ML service
-curl http://localhost:7004/health
+curl http://45.137.194.145:7004/health
 ```
 
 ---

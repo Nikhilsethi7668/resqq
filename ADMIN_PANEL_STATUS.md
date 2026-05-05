@@ -61,7 +61,7 @@ Status: active ✅
 ## 🎯 How to Access Features
 
 ### 1. News Admin Dashboard
-**URL:** `http://localhost:5173/admin/news-dashboard`
+**URL:** `http://45.137.194.145:5173/admin/news-dashboard`
 
 **Who can access:**
 - News Admin
@@ -80,7 +80,7 @@ Status: active ✅
 - City Admin: Can only see their city
 
 ### 2. Main Admin Dashboard  
-**URL:** `http://localhost:5173/admin/dashboard`
+**URL:** `http://45.137.194.145:5173/admin/dashboard`
 
 **Who can access:**
 - City Admin
@@ -95,7 +95,7 @@ Status: active ✅
 - Update post status to "completed"
 
 ### 3. Manage Admins
-**URL:** `http://localhost:5173/admin/manage-admins`
+**URL:** `http://45.137.194.145:5173/admin/manage-admins`
 
 **Who can access:**
 - Central Admin
@@ -130,7 +130,7 @@ Status: active ✅
 
 1. **Check backend is running:**
    ```bash
-   curl http://localhost:5001/api/news
+   curl http://45.137.194.145:5001/api/news
    ```
    Should return news data.
 
@@ -168,14 +168,14 @@ Status: active ✅
 
 1. **Login:**
    ```
-   URL: http://localhost:5173/admin/login
+   URL: http://45.137.194.145:5173/admin/login
    Email: nikhilsethin494@gmail.com
    Password: (your password)
    ```
 
 2. **Navigate to News Dashboard:**
    - Click "📰 News Dashboard" in navbar
-   - OR go to: `http://localhost:5173/admin/news-dashboard`
+   - OR go to: `http://45.137.194.145:5173/admin/news-dashboard`
 
 3. **You Should See:**
    - 4 completed reports listed

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { io } from 'socket.io-client';
 import useAuthStore from './useAuthStore';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:7003';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://45.137.194.145:7003';
 
 const useSocketStore = create((set, get) => ({
     socket: null,

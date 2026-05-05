@@ -31,7 +31,7 @@ async function testCompletedPosts() {
         console.log('\n📊 Testing /api/admin/completed-posts endpoint...\n');
 
         // Test the endpoint
-        const response = await axios.get('http://localhost:5001/api/admin/completed-posts', {
+        const response = await axios.get('http://45.137.194.145:5001/api/admin/completed-posts', {
             headers: { Authorization: `Bearer ${token}` },
             params: {
                 page: 1,

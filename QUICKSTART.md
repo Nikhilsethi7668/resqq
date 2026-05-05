@@ -2,8 +2,8 @@
 
 ## 🚀 Current Status
 
-✅ **Backend:** Running on `http://localhost:5001`  
-✅ **Frontend:** Running on `http://localhost:5173`  
+✅ **Backend:** Running on `http://45.137.194.145:5001`  
+✅ **Frontend:** Running on `http://45.137.194.145:5173`  
 ✅ **MongoDB:** Connected  
 ✅ **Socket.IO:** Active  
 
@@ -11,7 +11,7 @@
 
 ## 📱 Access the Application
 
-Open your browser and go to: **http://localhost:5173**
+Open your browser and go to: **http://45.137.194.145:5173**
 
 ---
 

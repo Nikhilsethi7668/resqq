@@ -215,7 +215,7 @@ RESEND_FROM_EMAIL=onboarding@resend.dev  # Optional, defaults to this
 
 # Other settings...
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/resqq
+MONGO_URI=mongodb://45.137.194.145:27017/resqq
 JWT_SECRET=your_secret_key
 ```
 

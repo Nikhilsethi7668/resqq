@@ -2,7 +2,7 @@
 const axios = require('axios');
 require('dotenv').config();
 
-const API_URL = process.env.BACKEND_URL || 'http://localhost:5000';
+const API_URL = process.env.BACKEND_URL || 'http://45.137.194.145:5000';
 
 console.log('🧪 Complete Alert System Test\n');
 console.log('='.repeat(70));

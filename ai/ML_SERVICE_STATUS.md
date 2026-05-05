@@ -2,16 +2,16 @@
 
 ## Status: ACTIVE ✓
 
-The ML Service is now running on **http://localhost:5002**
+The ML Service is now running on **http://45.137.194.145:5002**
 
 ## Quick Verification
 
 ```bash
 # Check if service is running
-curl http://localhost:5002/health
+curl http://45.137.194.145:5002/health
 
 # Test a prediction
-curl -X POST http://localhost:5002/predict \
+curl -X POST http://45.137.194.145:5002/predict \
   -d "type=text&text=There is a flood emergency"
 ```
 
